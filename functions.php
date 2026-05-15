@@ -1,0 +1,493 @@
+<?php
+
+use RoadmapStarter\BlocksServiceProvider;
+
+require_once __DIR__ . '/vendor_prefixed/autoload.php';
+
+function roadmap_starter_force_gifs_full_size( $attr, $attachment, $size ) {
+	// Check if the attachment is a GIF
+	if ( 'image/gif' === get_post_mime_type( $attachment ) ) {
+		// Get the full size of the GIF
+		$full_size = wp_get_attachment_image_src( $attachment->ID, 'full' );
+
+		// If full size is available, modify the attributes
+		if ( $full_size ) {
+			$attr['src']    = $full_size[0]; // URL of the full-size image
+			$attr['width']  = $full_size[1]; // Width of the full-size image
+			$attr['height'] = $full_size[2]; // Height of the full-size image
+			unset( $attr['srcset'] );
+			unset( $attr['sizes'] );
+		}
+	}
+
+	return $attr;
+}
+add_filter( 'wp_get_attachment_image_attributes', 'roadmap_starter_force_gifs_full_size', 10, 3 );
+
+
+add_filter( 'wpseo_breadcrumb_links', 'yoast_seo_breadcrumb_append_link' );
+
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		// This is not needed since we load the FA icons directly from public/images/fontawesome
+		// This is more performant since we only load the icons we are using on the page
+		wp_dequeue_style( 'font-awesome' );
+		wp_dequeue_style( 'acffa_font-awesome' );
+	},
+	99999
+);
+
+function remove_jquery_migrate( $scripts ) {
+	if ( ! is_admin() && isset( $scripts->registered['jquery'] ) ) {
+		$script = $scripts->registered['jquery'];
+		if ( $script->deps ) {
+			$script->deps = array_diff( $script->deps, array( 'jquery-migrate' ) );
+		}
+	}
+}
+add_action( 'wp_default_scripts', 'remove_jquery_migrate' );
+
+function yoast_seo_breadcrumb_append_link( $links ) {
+	global $post;
+
+	if ( is_single() ) {
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		// get archive permalink for current post type
+		$archive_link = get_post_type_archive_link( $post_type );
+
+		// sometimes the post archive page is already in the breadcrumbs (not sure why). Check and see if it's present first
+		if ( ! array_column( $links, 'ptarchive' ) ) {
+			$breadcrumb[] = array(
+				'url'  => $archive_link,
+				'text' => $post_type_object->labels->name,
+			);
+
+			// add to second position
+			array_splice( $links, 1, 0, $breadcrumb );
+		}
+
+		if ( $links && $links[0]['text'] === 'Home' ) {
+			array_shift( $links );
+		}
+	}
+
+	return $links;
+}
+
+function roadmap_starter_allowed_block_types( $allowed_blocks, $editor_context ) {
+	$acf_blocks = BlocksServiceProvider::get_instance()->get_block_names();
+
+	return array_merge(
+		array(
+			'core/paragraph',
+			'boldblocks/youtube-block',
+			'core/heading',
+			'core/list-item',
+			'core/list',
+			'core/spacer',
+			'core/column',
+			'core/columns',
+			'core/image',
+			'core/group',
+			'core/button',
+			'core/buttons',
+			'core/video',
+			'core/social-link',
+			'contact-form-7/contact-form-selector',
+			'core/html',
+			'core/quote',
+			'core/block',
+			'core/navigation',
+		),
+		$acf_blocks
+	);
+}
+
+add_filter( 'allowed_block_types_all', 'roadmap_starter_allowed_block_types', 25, 2 );
+
+function roadmap_starter_redirect_category_search( $query_object ) {
+	if ( $query_object->is_search() && $query_object->query['s'] === '' && ! empty( $query_object->query['category_name'] ) ) {
+		$category = $query_object->query['category_name'];
+
+		// redirect to this category page
+		$category_link = get_term_link( $category, 'category' );
+		wp_redirect( $category_link );
+		exit;
+	} elseif ( $query_object->is_search() && $query_object->query['s'] === '' && empty( $query_object->query['category_name'] ) && ! empty( $query_object->query['post_type'] ) ) {
+		// this is the main blog page
+		$link = get_post_type_archive_link( $query_object->query['post_type'] );
+		wp_redirect( $link );
+		exit;
+	}
+}
+
+add_filter(
+	'wpseo_breadcrumb_single_link',
+	function ( $link_output ) {
+		if ( strpos( $link_output, 'breadcrumb_last' ) !== false ) {
+			$link_output = '';
+		}
+
+		return $link_output;
+	}
+);
+
+add_action( 'parse_query', 'roadmap_starter_redirect_category_search' );
+
+add_filter(
+	'ACFFA_always_enqueue_fa',
+	function () {
+		return true;
+	}
+);
+
+
+/**
+ * roadmap-starter functions and definitions
+ *
+ * @link    https://developer.wordpress.org/themes/basics/theme-functions/
+ *
+ * @package roadmap-starter
+ */
+
+
+if ( ! defined( 'WPCF7_AUTOP' ) ) {
+	define( 'WPCF7_AUTOP', false );
+}
+add_filter( 'wpcf7_autop_or_not', '__return_false' );
+
+add_action( 'admin_menu', 'roadmap_starter_linked_url' );
+function roadmap_starter_linked_url() {
+	add_menu_page(
+		'linked_url',
+		'Reusable Blocks',
+		'read',
+		'edit.php?post_type=wp_block',
+		'',
+		'dashicons-editor-table',
+		22
+	);
+}
+
+add_filter( 'acf/fields/wysiwyg/toolbars', 'roadmap_starter_toolbars' );
+function roadmap_starter_toolbars( $toolbars ) {
+	$toolbars['Very Simple']    = array();
+	$toolbars['Very Simple'][1] = array( 'bold', 'link' );
+
+	$toolbars['Simple']    = array();
+	$toolbars['Simple'][1] = array( 'bold', 'link', 'formatselect', 'bullist' );
+
+	return $toolbars;
+}
+
+add_action(
+	'admin_enqueue_scripts',
+	function () {
+		wp_enqueue_style( 'roadmap_starter_wp_admin_css', roadmap_starter_public_uri( 'css/style-editor.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
+		// wp_enqueue_style( 'twbs-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css' );
+	}
+);
+
+add_action(
+	'after_setup_theme',
+	function () {
+		add_theme_support( 'align-wide' );
+	}
+);
+
+if ( ! function_exists( 'roadmap_starter_setup' ) ) :
+	/**
+	 * Sets up theme defaults and registers support for various WordPress features.
+	 *
+	 * Note that this function is hooked into the after_setup_theme hook, which
+	 * runs before the init hook. The init hook is too late for some features, such
+	 * as indicating support for post thumbnails.
+	 */
+	function roadmap_starter_setup() {
+		/*
+		 * Make theme available for translation.
+		 * Translations can be filed in the /languages/ directory.
+		 * If you're building a theme based on roadmap-starter, use a find and replace
+		 * to change 'roadmap-starter' to the name of your theme in all the template files.
+		 */
+		load_theme_textdomain( 'roadmap-starter', get_template_directory() . '/languages' );
+
+		// Add default posts and comments RSS feed links to head.
+		add_theme_support( 'automatic-feed-links' );
+
+		/*
+		 * Let WordPress manage the document title.
+		 * By adding theme support, we declare that this theme does not use a
+		 * hard-coded <title> tag in the document head, and expect WordPress to
+		 * provide it for us.
+		 */
+		add_theme_support( 'title-tag' );
+
+		/*
+		 * Enable support for Post Thumbnails on posts and pages.
+		 *
+		 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+		 */
+		add_theme_support( 'post-thumbnails' );
+
+		// This theme uses wp_nav_menu() in one location.
+		require_once 'inc/roadmap-starter-bootstrap-navwalker.php';
+		register_nav_menus(
+			array(
+				'top-nav'        => esc_html__( 'Top Nav', 'roadmap-starter' ),
+				'primary'        => esc_html__( 'Primary', 'roadmap-starter' ),
+				'primary-mobile' => esc_html__( 'Primary Mobile', 'roadmap-starter' ),
+				'primary-right'  => esc_html__( 'Primary Right', 'roadmap-starter' ),
+				'mobile-cta'     => esc_html__( 'Mobile Nav CTA', 'roadmap-starter' ),
+				'footer'         => esc_html__( 'Footer', 'roadmap-starter' ),
+				'footer-bottom'  => esc_html__( 'Footer Bottom', 'roadmap-starter' ),
+			)
+		);
+
+		require_once 'inc/bootstrap-pagination.php';
+
+		/*
+		 * Switch default core markup for search form, comment form, and comments
+		 * to output valid HTML5.
+		 */
+		add_theme_support(
+			'html5',
+			array(
+				'search-form',
+				'comment-form',
+				'comment-list',
+				'gallery',
+				'caption',
+			)
+		);
+
+		// Set up the WordPress core custom background feature.
+		add_theme_support(
+			'custom-background',
+			apply_filters(
+				'roadmap_starter_custom_background_args',
+				array(
+					'default-color' => 'ffffff',
+					'default-image' => '',
+				)
+			)
+		);
+
+		// Add theme support for selective refresh for widgets.
+		add_theme_support( 'customize-selective-refresh-widgets' );
+
+		/**
+		 * Add support for core custom logo.
+		 *
+		 * @link https://codex.wordpress.org/Theme_Logo
+		 */
+		add_theme_support(
+			'custom-logo',
+			array(
+				'height'      => 250,
+				'width'       => 250,
+				'flex-width'  => true,
+				'flex-height' => true,
+			)
+		);
+	}
+endif;
+add_action( 'after_setup_theme', 'roadmap_starter_setup' );
+
+/**
+ * Set the content width in pixels, based on the theme's design and stylesheet.
+ *
+ * Priority 0 to make it available to lower priority callbacks.
+ *
+ * @global int $content_width
+ */
+function roadmap_starter_content_width() {
+	// This variable is intended to be overruled from themes.
+	// Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+	$GLOBALS['content_width'] = apply_filters( 'roadmap_starter_content_width', 640 );
+}
+
+add_action( 'after_setup_theme', 'roadmap_starter_content_width', 0 );
+
+/**
+ * Register widget area.
+ *
+ * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
+ */
+function roadmap_starter_widgets_init() {
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Sidebar', 'roadmap-starter' ),
+			'id'            => 'sidebar-1',
+			'description'   => esc_html__( 'Add widgets here.', 'roadmap-starter' ),
+			'before_widget' => '<section id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title">',
+			'after_title'   => '</h2>',
+		)
+	);
+
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Footer', 'roadmap-starter' ),
+			'id'            => 'footer-1',
+			'description'   => esc_html__( 'Add widgets here.', 'roadmap-starter' ),
+			'before_widget' => '<section id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title">',
+			'after_title'   => '</h2>',
+		)
+	);
+}
+
+add_action( 'widgets_init', 'roadmap_starter_widgets_init' );
+
+/**
+ * Enqueue scripts and styles.
+ */
+function roadmap_starter_scripts() {
+	wp_enqueue_style( 'roadmap-starter-style', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( 'roadmap-starter-style-bundle', get_template_directory_uri() . '/public/css/theme.min.css', null, wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_script(
+		'roadmap-starter-js-bundle',
+		get_template_directory_uri() . '/public/theme.min.js',
+		array( 'jquery' ),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+}
+
+add_action( 'wp_enqueue_scripts', 'roadmap_starter_scripts' );
+
+/**
+ * Implement the Custom Header feature.
+ */
+require get_template_directory() . '/inc/custom-header.php';
+
+/**
+ * Custom template tags for this theme.
+ */
+require get_template_directory() . '/inc/template-tags.php';
+
+/**
+ * Functions which enhance the theme by hooking into WordPress.
+ */
+require get_template_directory() . '/inc/template-functions.php';
+
+/**
+ * Customizer additions.
+ */
+require get_template_directory() . '/inc/customizer.php';
+
+/**
+ * Additional helpers
+ */
+require get_template_directory() . '/inc/roadmap-starter-helpers.php';
+
+require get_template_directory() . '/acf-blocks/BlocksServiceProvider.php';
+require get_template_directory() . '/acf-blocks/AIForGutenbergProvider.php';
+
+/**
+ * Load Jetpack compatibility file.
+ */
+if ( defined( 'JETPACK__VERSION' ) ) {
+	require get_template_directory() . '/inc/jetpack.php';
+}
+
+function roadmap_starter_add_image_sizes() {
+	$breakpoints = array(
+		'xs' => 0,
+		'sm' => 576,
+		'md' => 768,
+		'lg' => 992,
+		'xl' => 1140,
+	);
+
+	foreach ( $breakpoints as $breakpoint => $min_width ) {
+		add_image_size( 'roadmap_starter_' . $breakpoint, $min_width * 2 );
+	}
+
+	add_image_size( 'roadmap_starter_tiny', 20, 20, false );
+}
+
+add_action( 'init', 'roadmap_starter_add_image_sizes' );
+
+add_image_size( 'roadmap_starter_full_width', 1600 );
+
+/**
+ * Configure the "sizes" attribute of images.
+ */
+function roadmap_starter_content_image_sizes_attr( $sizes, $size, $image_src, $image_meta, $attachment_id ) {
+	$width = $size[0];
+	if ( $width > 640 ) {
+		return '(min-width: 1440px) 1600px, (min-width: 1440px) 1600px, (min-width: 840px) 768px, (min-width: 300px) 300px, 100vw';
+	} else {
+		return $sizes;
+	}
+}
+
+add_filter( 'wp_calculate_image_sizes', 'roadmap_starter_content_image_sizes_attr', 10, 5 );
+
+function roadmap_starter_wp_get_attachment_image( $attachment_id, $size = 'thumbnail', $icon = false, $attr = '' ) {
+	$mediaQuery = '';
+	switch ( $size ) {
+		case 'full':
+			$mediaQuery = '100vw';
+			break;
+		case 'wide':
+			$mediaQuery = '(min-width: 1140px) 1140px, 100vw';
+			break;
+		case '':
+			$mediaQuery = '(min-width: 768px) 768px, 100vw';
+			break;
+		default:
+			$mediaQuery = $size;
+			break;
+	}
+
+	add_filter(
+		'wp_calculate_image_sizes',
+		function ( $sizes, $size, $image_src, $image_meta, $attachment_id ) use ( $mediaQuery ) {
+			return $mediaQuery;
+		},
+		20,
+		5
+	);
+
+	echo wp_get_attachment_image( $attachment_id, 'full', $icon, $attr );
+
+	remove_filter(
+		'wp_calculate_image_sizes',
+		function ( $sizes, $size, $image_src, $image_meta, $attachment_id ) use ( $mediaQuery ) {
+			return $mediaQuery;
+		},
+		20,
+		5
+	);
+}
+
+add_filter(
+	'block_categories_all',
+	function ( $categories ) {
+
+		// Adding a new category.
+		// TODO make this based on theme name
+		array_unshift(
+			$categories,
+			array(
+				'slug'  => 'roadmap-starter',
+				'title' => 'Roadmap Starter',
+			)
+		);
+
+		return $categories;
+	}
+);

@@ -1,0 +1,38 @@
+@import "bootstrap/scss/utilities";
+
+.sticky {
+	display: block;
+}
+
+.hentry {
+	margin: 0 0 1.5em;
+}
+
+.updated:not(.published) {
+	display: none;
+}
+
+.page-content,
+.entry-content,
+.entry-summary {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.entry-content > h1{
+	@extend .mb-5;
+}
+
+body:not(.page-template-default){
+	.page-content,
+	.entry-content,
+	.entry-summary {
+	@extend .pb-5;
+	@extend .pb-md-6;
+	}
+}
+
+.page-links {
+	clear: both;
+	margin: 0 0 1.5em;
+}

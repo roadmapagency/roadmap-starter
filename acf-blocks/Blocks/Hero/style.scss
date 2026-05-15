@@ -1,0 +1,194 @@
+.wp-block-roadmap-starter-hero {
+	position: relative;
+	width: 100%;
+
+	&.dark,
+	&.light {
+	&::before {
+		content: "";
+		z-index: 2;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		width: 100%;
+	}
+	}
+
+	&.dark {
+	&::before {
+		background: rgba(23, 33, 42, 0.65);
+
+		@media (min-width: 768px) {
+		background: linear-gradient(
+			to right,
+			rgba(23, 33, 42, 0.65) 60%,
+			rgba(23, 33, 42, 0.25) 100%
+		);
+		}
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	.wp-block-roadmap-starter-hero__overline {
+		color: #fbfdfb;
+	}
+
+	.btn-primary {
+		border-color: #fbfdfb;
+		&:hover {
+		border-color: map_get($theme-colors, secondary);
+		}
+	}
+	}
+
+	&.light {
+	&::before {
+		background: rgba(242, 249, 243, 0.7);
+		@media (min-width: 768px) {
+		background: linear-gradient(
+			to right,
+			rgba(242, 249, 243, 0.75) 60%,
+			rgba(242, 249, 243, 0.15) 100%
+		);
+		}
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	.wp-block-roadmap-starter-hero__overline {
+		color: map_get($theme-colors, primary);
+	}
+	}
+
+	&.right-image.has-bg {
+	padding: 0 !important;
+
+	@media (min-width: map-get($grid-breakpoints, md)) {
+		padding-top: clamp(64px, 9vw, 128px) !important;
+		padding-bottom: clamp(64px, 9vw, 128px) !important;
+	}
+	}
+
+	&.has-caption {
+	padding-bottom: 30px;
+	}
+
+	//padding-left: 120px;
+	//padding-right: 120px;
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+	margin: 0;
+	margin-bottom: 16px;
+	font-weight: 900;
+	}
+
+	&__overline {
+	font-size: 21px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 28px; /* 133.333% */
+	text-transform: uppercase;
+	}
+
+	&.right-image {
+	background-color: map_get($theme-colors, bright-green-light-active);
+
+	h1 {
+		@extend h2;
+	}
+
+	&__image {
+		overflow: hidden;
+	}
+
+	img.img-bg-cover {
+		@extend .col-md-5;
+		max-width: 700px;
+		right: 0;
+		@media (min-width: 2000px) {
+		right: auto;
+		left: 52%;
+		}
+	}
+
+	img.mobile {
+		object-fit: cover;
+		height: calc(100vw * 0.6667) !important;
+		width: 100%;
+	}
+	}
+
+	&__mobile-img {
+	height: calc(100vw * 0.6667);
+	}
+
+	strong {
+	color: map_get($theme-colors, primary);
+	}
+
+	p {
+	font-size: $h4-font-size;
+	font-weight: normal;
+	line-height: 1.6;
+	color: map-get($theme-colors, primary);
+	}
+
+	&__header {
+	position: relative;
+	z-index: 2;
+	}
+
+	.img-bg-cover {
+	width: 100%;
+	}
+
+	&.right-image .img-bg-cover {
+	display: none;
+	@media (min-width: map-get($grid-breakpoints, md)) {
+		display: block;
+	}
+	}
+
+	figcaption {
+	position: relative;
+	padding-top: 8px;
+	padding-bottom: 8px;
+
+	p {
+		color: #fff;
+		font-weight: bold;
+		font-size: 18px;
+		span {
+		font-weight: normal;
+		}
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+
+		-webkit-mask-image: linear-gradient(270deg, black 80%, transparent);
+		mask-image: linear-gradient(270deg, black 80%, transparent);
+		backdrop-filter: blur(9px);
+	}
+	}
+}

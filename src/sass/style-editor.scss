@@ -1,0 +1,58 @@
+@import "variables-site/variables-site";
+@import "bootstrap/scss/functions";
+
+html :where(.wp-block){
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	max-width: none!important;
+}
+
+.wp-block-list{
+	padding-left: 20px;
+}
+
+.wp-block-roadmap-starter{
+	max-width: map_get($align-max-widths, none);
+}
+
+.wp-block-roadmap-starter.alignwide, .wp-block-roadmap-starter.alignfull{
+	max-width: none;
+	width: 100%;
+}
+
+.wp-block-roadmap-starter.alignwide .row{
+	max-width: map_get($align-max-widths, wide)!important;
+}
+
+.wp-block-roadmap-starter.alignfull .row{
+	max-width: map_get($align-max-widths, full)!important;
+}
+
+.blocks-widgets-container .editor-styles-wrapper {
+	max-width: none!important;
+}
+
+.acf-block-preview .wp-block-roadmap-starter{
+	padding: 10px;
+}
+.acf-block-preview .wp-block-roadmap-starter > .container{
+	padding: 0;
+}
+
+.block-editor-inserter__preview-container{
+	width: 400px;
+}
+
+.block-editor-block-preview__content-iframe body{
+	background-color: #fff;
+}
+
+#editor .wp-block, .acf-block-preview{
+	@import "style";
+}
+
+.acf-block-preview .wp-block-roadmap-starter{
+	margin-top: 0!important;
+	margin-bottom: 0!important;
+}

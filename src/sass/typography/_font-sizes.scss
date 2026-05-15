@@ -1,0 +1,36 @@
+@each $breakpoint in map-keys($grid-breakpoints) {
+	@include media-breakpoint-up($breakpoint) {
+		$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+		@each $prop, $abbrev in (font-size: fs) {
+			@each $size, $length in $font-sizes {
+				.#{$abbrev}#{$infix}-#{$size} { #{$prop}: $length * 1% !important; }
+			}
+		}
+	}
+}
+
+
+// This is a helper to
+$headers: (
+		h1: $h1-font-size,
+		h2: $h2-font-size,
+		h3: $h3-font-size,
+		h4: $h4-font-size,
+		h5: $h5-font-size,
+		h6: $h5-font-size,
+);
+
+@function strip-unit($number) {
+	@if type-of($number) == 'number' and not unitless($number) {
+		@return $number / ($number * 0 + 1);
+	}
+
+	@return $number;
+}
+
+@each $heading, $value in $headers {
+	#{$heading}, .#{$heading}{
+		font-size: clamp(max(16px, $value * $htag-responsive-multiplier), strip-unit(($value / 1440) * 100) + vw, $value);
+	}
+}

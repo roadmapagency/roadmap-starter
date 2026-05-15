@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RoadmapStarter\Vendor\Doctrine\Inflector;
+
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\English;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\Esperanto;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\French;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\Italian;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\NorwegianBokmal;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\Portuguese;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\Spanish;
+use RoadmapStarter\Vendor\Doctrine\Inflector\Rules\Turkish;
+use InvalidArgumentException;
+
+use function sprintf;
+
+final class InflectorFactory
+{
+    public static function create(): LanguageInflectorFactory
+    {
+        return self::createForLanguage(Language::ENGLISH);
+    }
+
+    public static function createForLanguage(string $language): LanguageInflectorFactory
+    {
+        switch ($language) {
+            case Language::ENGLISH:
+                return new English\InflectorFactory();
+
+            case Language::ESPERANTO:
+                return new Esperanto\InflectorFactory();
+
+            case Language::FRENCH:
+                return new French\InflectorFactory();
+
+            case Language::ITALIAN:
+                return new Italian\InflectorFactory();
+
+            case Language::NORWEGIAN_BOKMAL:
+                return new NorwegianBokmal\InflectorFactory();
+
+            case Language::PORTUGUESE:
+                return new Portuguese\InflectorFactory();
+
+            case Language::SPANISH:
+                return new Spanish\InflectorFactory();
+
+            case Language::TURKISH:
+                return new Turkish\InflectorFactory();
+
+            default:
+                throw new InvalidArgumentException(sprintf(
+                    'Language "%s" is not supported.',
+                    $language
+                ));
+        }
+    }
+}

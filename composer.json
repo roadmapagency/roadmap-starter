@@ -1,0 +1,44 @@
+{
+  "require": {
+    "stoutlogic/acf-builder": "^1.12.0"
+  },
+  "require-dev": {
+    "brianhenryie/strauss": "^0.27",
+    "wp-coding-standards/wpcs": "^3.3.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0",
+    "phpcompatibility/php-compatibility": "^9.3.5"
+  },
+  "extra": {
+    "strauss": {
+      "target_directory": "vendor_prefixed",
+      "namespace_prefix": "RoadmapStarter\\Vendor\\",
+      "classmap_prefix": "RoadmapStarter_Vendor_",
+      "packages": [
+        "stoutlogic/acf-builder",
+        "doctrine/inflector"
+      ],
+      "delete_vendor_packages": true
+    }
+  },
+  "scripts": {
+    "prefix-namespaces": [
+      "sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+      "@php bin/strauss.phar",
+      "@composer dump-autoload"
+    ],
+    "post-install-cmd": [
+      "@prefix-namespaces"
+    ],
+    "post-update-cmd": [
+      "@prefix-namespaces"
+    ],
+    "post-autoload-dump": [
+      "@php bin/strauss.phar include-autoloader"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
+}
