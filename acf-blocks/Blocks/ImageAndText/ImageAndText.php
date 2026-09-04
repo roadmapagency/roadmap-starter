@@ -12,7 +12,7 @@ class ImageAndText extends AbstractBlock {
 					'title'           => __( 'Image and Text' ),
 					'description'     => __( 'Image and text blocks with a top heading and description. Usually used to highlight a feature or benefit.' ),
 					'render_callback' => array( $this, 'render' ),
-					'category'        => 'roadmap-starter',
+					'category'        => THEME_SLUG,
 					'icon'            => roadmap_starter_fontawesome_icon_svg( 'id-card', 'regular' ),
 					'keywords'        => array( 'image', 'text' ),
 					'align'           => 'wide',

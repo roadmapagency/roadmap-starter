@@ -12,7 +12,7 @@ class Hero extends AbstractBlock {
 					'title'           => __( 'Hero' ),
 					'description'     => __( 'Hero image with large text and optional buttons. Usually used at the top of a page.' ),
 					'render_callback' => array( $this, 'render' ),
-					'category'        => 'roadmap-starter',
+					'category'        => THEME_SLUG,
 					'icon'            => roadmap_starter_fontawesome_icon_svg( 'panorama' ),
 					'keywords'        => array( 'hero', 'image', 'header' ),
 					'align'           => 'wide',

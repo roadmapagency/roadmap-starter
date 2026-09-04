@@ -33,7 +33,7 @@ function roadmap_starter_jetpack_setup() {
 		'jetpack-content-options',
 		array(
 			'post-details' => array(
-				'stylesheet' => 'roadmap-starter-style',
+				'stylesheet' => THEME_SLUG . '-style',
 				'date'       => '.posted-on',
 				'categories' => '.cat-links',
 				'tags'       => '.tags-links',

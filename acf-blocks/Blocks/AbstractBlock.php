@@ -111,7 +111,7 @@ abstract class AbstractBlock implements BlocksInterface {
 	 * @throws \ReflectionException
 	 */
 	public static function get_block_class_name( $suffix = '' ) {
-		return 'wp-block-roadmap-starter-' . strtolower( self::get_slug() ) . $suffix;
+		return 'wp-block-' . THEME_SLUG . '-' . strtolower( self::get_slug() ) . $suffix;
 	}
 
 	/**
@@ -132,8 +132,22 @@ abstract class AbstractBlock implements BlocksInterface {
 	public function render( $block ) {
 		$block_id = self::get_slug() . '-' . substr( $block['id'], - 5 );
 		$id       = ! empty( $block['anchor'] ) ? $block['anchor'] : $block_id;
-		$classes  = $block['align'] ? 'align' . $block['align'] : '';
-		$classes .= ' container-fluid wp-block-roadmap-starter' . $this->get_css_classes( $block );
+
+		// Resolve the alignment. The saved block markup may omit `align` (e.g. programmatic
+		// inserts that didn't carry it), which would drop the block to the narrow content
+		// width. When the block locks alignment (`supports.align === false`) fall back to the
+		// alignment it was registered with, so a band always gets its `alignfull`/`alignwide`
+		// wrapper regardless of how it was inserted.
+		$align = ! empty( $block['align'] ) ? $block['align'] : '';
+		if ( '' === $align && function_exists( 'acf_get_block_type' ) ) {
+			$block_type = acf_get_block_type( self::get_acf_slug() );
+			if ( $block_type && isset( $block_type['supports']['align'] ) && false === $block_type['supports']['align'] && ! empty( $block_type['align'] ) ) {
+				$align = $block_type['align'];
+			}
+		}
+
+		$classes  = $align ? 'align' . $align : '';
+		$classes .= ' container-fluid wp-block-' . THEME_SLUG . $this->get_css_classes( $block );
 
 		$args = array();
 		/** @var \StoutLogic\AcfBuilder\FieldsBuilder $field_set */

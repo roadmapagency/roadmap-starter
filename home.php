@@ -47,7 +47,7 @@ switch ( true ) {
 ?>
 
 <style>
-	.wp-block-roadmap-starter-imageandtext{
+	.wp-block-<?php echo esc_html( THEME_SLUG ); ?>-imageandtext{
 		margin-top: 0!important;
 		margin-bottom: 0!important;
 	}

@@ -1,8 +1,23 @@
 <?php
 
 use RoadmapStarter\BlocksServiceProvider;
+use RoadmapStarter\Identity;
 
 require_once __DIR__ . '/vendor_prefixed/autoload.php';
+require_once __DIR__ . '/inc/identity.php';
+
+/**
+ * Constants derived once from {@see Identity}. Every other place in the theme
+ * (block CSS class prefixes, enqueue handles, ability category slugs, etc.)
+ * should reference these instead of hardcoding the slug — cloning the theme
+ * then only requires updating style.css.
+ *
+ * Text-domain literals in __()/_e()/_x() must stay as-is for WP's translation
+ * tooling; THEME_TEXTDOMAIN is for non-translation contexts only.
+ */
+define( 'THEME_SLUG', Identity::slug() );
+define( 'THEME_TEXTDOMAIN', Identity::textdomain() );
+define( 'THEME_NAME', Identity::name() );
 
 function roadmap_starter_force_gifs_full_size( $attr, $attachment, $size ) {
 	// Check if the attachment is a GIF
@@ -186,7 +201,7 @@ function roadmap_starter_toolbars( $toolbars ) {
 add_action(
 	'admin_enqueue_scripts',
 	function () {
-		wp_enqueue_style( 'roadmap_starter_wp_admin_css', roadmap_starter_public_uri( 'css/style-editor.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_style( THEME_SLUG . '-wp-admin-css', roadmap_starter_public_uri( 'css/style-editor.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
 		// wp_enqueue_style( 'twbs-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css' );
 	}
 );
@@ -234,7 +249,7 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 		add_theme_support( 'post-thumbnails' );
 
 		// This theme uses wp_nav_menu() in one location.
-		require_once 'inc/roadmap-starter-bootstrap-navwalker.php';
+		require_once 'inc/bootstrap-navwalker.php';
 		register_nav_menus(
 			array(
 				'top-nav'        => esc_html__( 'Top Nav', 'roadmap-starter' ),
@@ -350,10 +365,10 @@ add_action( 'widgets_init', 'roadmap_starter_widgets_init' );
  * Enqueue scripts and styles.
  */
 function roadmap_starter_scripts() {
-	wp_enqueue_style( 'roadmap-starter-style', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
-	wp_enqueue_style( 'roadmap-starter-style-bundle', get_template_directory_uri() . '/public/css/theme.min.css', null, wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( THEME_SLUG . '-style', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( THEME_SLUG . '-style-bundle', get_template_directory_uri() . '/public/css/theme.min.css', null, wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script(
-		'roadmap-starter-js-bundle',
+		THEME_SLUG . '-js-bundle',
 		get_template_directory_uri() . '/public/theme.min.js',
 		array( 'jquery' ),
 		wp_get_theme()->get( 'Version' ),
@@ -390,10 +405,25 @@ require get_template_directory() . '/inc/customizer.php';
 /**
  * Additional helpers
  */
-require get_template_directory() . '/inc/roadmap-starter-helpers.php';
+require get_template_directory() . '/inc/helpers.php';
 
 require get_template_directory() . '/acf-blocks/BlocksServiceProvider.php';
 require get_template_directory() . '/acf-blocks/AIForGutenbergProvider.php';
+
+/**
+ * Theme-owned WP-CLI commands.
+ */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once get_template_directory() . '/inc/cli/class-clone-command.php';
+	\WP_CLI::add_command(
+		'roadmap-starter clone',
+		array( \RoadmapStarter\CLI\Clone_Command::class, 'clone_' )
+	);
+	\WP_CLI::add_command(
+		'roadmap-starter remove',
+		array( \RoadmapStarter\CLI\Clone_Command::class, 'remove' )
+	);
+}
 
 /**
  * Load Jetpack compatibility file.
@@ -477,14 +507,11 @@ function roadmap_starter_wp_get_attachment_image( $attachment_id, $size = 'thumb
 add_filter(
 	'block_categories_all',
 	function ( $categories ) {
-
-		// Adding a new category.
-		// TODO make this based on theme name
 		array_unshift(
 			$categories,
 			array(
-				'slug'  => 'roadmap-starter',
-				'title' => 'Roadmap Starter',
+				'slug'  => THEME_SLUG,
+				'title' => THEME_NAME,
 			)
 		);
 

@@ -20,10 +20,14 @@ function roadmap_starter_register_ability_category() {
 		return;
 	}
 	wp_register_ability_category(
-		'roadmap-starter',
+		THEME_SLUG,
 		array(
-			'label'       => __( 'Roadmap Starter', 'roadmap-starter' ),
-			'description' => __( 'Theme-specific abilities contributed by the Roadmap Starter theme.', 'roadmap-starter' ),
+			'label'       => THEME_NAME,
+			'description' => sprintf(
+				/* translators: %s: theme name */
+				__( 'Theme-specific abilities contributed by the %s theme.', 'roadmap-starter' ),
+				THEME_NAME
+			),
 		)
 	);
 }
@@ -164,7 +168,7 @@ function roadmap_starter_process_acf_field( $field ) {
 		case 'font-awesome':
 			return array(
 				'type'                 => 'object',
-				'description'          => 'A Font Awesome icon. Call the roadmap-starter/search-icons ability to find the right icon by concept (e.g. "shield" for protection). Do not use the fa- prefix when querying.',
+				'description'          => 'A Font Awesome icon. Call the ' . THEME_SLUG . '/search-icons ability to find the right icon by concept (e.g. "shield" for protection). Do not use the fa- prefix when querying.',
 				'properties'           => array(
 					'style'   => array( 'type' => 'string' ),
 					'id'      => array( 'type' => 'string' ),
@@ -195,9 +199,9 @@ function roadmap_starter_register_icon_ability() {
 	}
 
 	wp_register_ability(
-		'roadmap-starter/search-icons',
+		THEME_SLUG . '/search-icons',
 		array(
-			'category'            => 'roadmap-starter',
+			'category'            => THEME_SLUG,
 			'label'               => __( 'Search Font Awesome icons', 'roadmap-starter' ),
 			'description'         => __( 'Find a Font Awesome icon by concept. Search using a visual concept (e.g. "shield" for protection, "rocket" for speed) rather than the literal text. Do not include the "fa-" prefix. Returns the icon style, ID, label, and unicode.', 'roadmap-starter' ),
 			'input_schema'        => array(
@@ -290,7 +294,7 @@ GRAPHQL;
 add_filter(
 	'ai_by_roadmap_filter_tools_Roadmap\\AiByRoadmap\\Blocks\\Agents\\PageFillerAgent',
 	static function ( array $tools ): array {
-		$tools[] = 'roadmap-starter/search-icons';
+		$tools[] = THEME_SLUG . '/search-icons';
 		return $tools;
 	}
 );
@@ -299,7 +303,7 @@ add_filter(
 	'ai_by_roadmap_filter_tools_Roadmap\\AiByRoadmap\\Blocks\\Agents\\BlockFillerAgent',
 	static function ( array $tools, $agent ): array {
 		if ( str_starts_with( $agent->block_id(), 'acf/' ) ) {
-			$tools[] = 'roadmap-starter/search-icons';
+			$tools[] = THEME_SLUG . '/search-icons';
 		}
 		return $tools;
 	},

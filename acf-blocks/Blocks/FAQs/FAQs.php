@@ -12,7 +12,7 @@ class FAQs extends AbstractBlock {
 					'title'           => __( 'FAQs' ),
 					'description'     => __( 'Frequently asked questions (FAQs)' ),
 					'render_callback' => array( $this, 'render' ),
-					'category'        => 'roadmap-starter',
+					'category'        => THEME_SLUG,
 					'icon'            => roadmap_starter_fontawesome_icon_svg( 'circle-question', 'regular' ),
 					'keywords'        => array( 'FAQs', 'FAQ', 'questions' ),
 					'align'           => 'wide',

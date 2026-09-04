@@ -56,6 +56,6 @@ function roadmap_starter_customize_partial_blogdescription() {
  * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
  */
 function roadmap_starter_customize_preview_js() {
-	wp_enqueue_script( 'roadmap-starter-customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), '20151215', true );
+	wp_enqueue_script( THEME_SLUG . '-customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), '20151215', true );
 }
 add_action( 'customize_preview_init', 'roadmap_starter_customize_preview_js' );

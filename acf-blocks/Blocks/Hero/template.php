@@ -71,7 +71,7 @@ $has_bg         = $background_theme !== 'right-image';
 				<?php endif; ?>
 
 			<?php if ( ( $primary_button_text && $primary_button_url ) || ( $secondary_button_text && $secondary_button_url ) ) : ?>
-				<div class="d-flex flex-row my-0 gap-4">
+				<div class="d-flex flex-column flex-sm-row align-items-start my-0 gap-3">
 					<?php if ( $primary_button_text && $primary_button_url ) : ?>
 						<a href="<?php echo $primary_button_url; ?>" class="btn btn-primary">
 							<?php echo $primary_button_text; ?>
