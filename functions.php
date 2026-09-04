@@ -441,6 +441,11 @@ require get_template_directory() . '/inc/customizer.php';
  */
 require get_template_directory() . '/inc/helpers.php';
 
+/**
+ * Synced-pattern resolution (shared sections referenced by many pages).
+ */
+require get_template_directory() . '/inc/patterns.php';
+
 require get_template_directory() . '/acf-blocks/BlocksServiceProvider.php';
 require get_template_directory() . '/acf-blocks/AIForGutenbergProvider.php';
 
@@ -457,6 +462,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		'roadmap-starter remove',
 		array( \RoadmapStarter\CLI\Clone_Command::class, 'remove' )
 	);
+
+	require_once get_template_directory() . '/inc/cli/class-fields-command.php';
+	\WP_CLI::add_command( 'roadmap-starter fields', \RoadmapStarter\CLI\Fields_Command::class );
+
+	require_once get_template_directory() . '/inc/cli/class-patterns-command.php';
+	\WP_CLI::add_command( 'roadmap-starter patterns', \RoadmapStarter\CLI\Patterns_Command::class );
 }
 
 /**
