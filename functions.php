@@ -111,6 +111,7 @@ function roadmap_starter_allowed_block_types( $allowed_blocks, $editor_context )
 			'core/buttons',
 			'core/video',
 			'core/social-link',
+			'core/social-links',
 			'contact-form-7/contact-form-selector',
 			'core/html',
 			'core/quote',
