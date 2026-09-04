@@ -47,7 +47,8 @@ const config = {
 module.exports = {
     entry: {
         theme: './src/theme.js',
-        "style-editor": './src/style-editor.js'
+        "style-editor": './src/style-editor.js',
+        admin: './src/admin.js'
     },
     devtool: "source-map",
     module: {

@@ -1,58 +1,30 @@
-@import "variables-site/variables-site";
-@import "bootstrap/scss/functions";
+// Block-editor CANVAS stylesheet, loaded via add_editor_style() (functions.php → roadmap_starter_setup).
+//
+// In the iframed editor (our ACF blocks are block API v3) WordPress injects this file into the canvas document
+// as-is, so `:root` / `html` / `body` ARE the canvas — Bootstrap's `--bs-*` variables and the base font apply
+// exactly as on the front-end. In the legacy non-iframed editor WordPress rewrites those three selectors to
+// `.editor-styles-wrapper` and prefixes everything else with it. Either way: import the front-end bundle at the
+// TOP LEVEL. Never nest it under a selector (the old `#editor .wp-block { @import "style"; }` produced
+// `#editor .wp-block :root` / `#editor .wp-block body`, which match nothing — no --bs-* variables, no base font,
+// so the canvas fell back to the editor's default serif).
+//
+// wp-admin parent-document tweaks (inserter preview width etc.) live in admin.scss.
+@import "style";
 
-html :where(.wp-block){
+// ---- Canvas-only overrides --------------------------------------------------------------------
+// Neutralise the editor's per-block layout wrapper so our blocks span the canvas like the front-end.
+// Keep these to the minimum: everything else should come from the shared bundle above.
+html :where(.wp-block) {
 	padding: 0;
 	margin: 0;
 	width: 100%;
-	max-width: none!important;
+	max-width: none !important;
 }
 
-.wp-block-list{
+.wp-block-list {
 	padding-left: 20px;
 }
 
-.wp-block-roadmap-starter{
-	max-width: map_get($align-max-widths, none);
-}
-
-.wp-block-roadmap-starter.alignwide, .wp-block-roadmap-starter.alignfull{
-	max-width: none;
-	width: 100%;
-}
-
-.wp-block-roadmap-starter.alignwide .row{
-	max-width: map_get($align-max-widths, wide)!important;
-}
-
-.wp-block-roadmap-starter.alignfull .row{
-	max-width: map_get($align-max-widths, full)!important;
-}
-
-.blocks-widgets-container .editor-styles-wrapper {
-	max-width: none!important;
-}
-
-.acf-block-preview .wp-block-roadmap-starter{
-	padding: 10px;
-}
-.acf-block-preview .wp-block-roadmap-starter > .container{
-	padding: 0;
-}
-
-.block-editor-inserter__preview-container{
-	width: 400px;
-}
-
-.block-editor-block-preview__content-iframe body{
-	background-color: #fff;
-}
-
-#editor .wp-block, .acf-block-preview{
-	@import "style";
-}
-
-.acf-block-preview .wp-block-roadmap-starter{
-	margin-top: 0!important;
-	margin-bottom: 0!important;
-}
+// Front-end `.entry-content` first/last-child rules (see _custom.scss) mirrored onto the editor root container.
+.is-root-container > .wp-block:first-child .wp-block-roadmap-starter { margin-top: 0 !important; }
+.is-root-container > .wp-block:last-child .wp-block-roadmap-starter.has-bg { margin-bottom: 0 !important; }

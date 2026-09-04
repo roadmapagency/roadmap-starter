@@ -198,11 +198,34 @@ function roadmap_starter_toolbars( $toolbars ) {
 	return $toolbars;
 }
 
+/**
+ * Google Fonts stylesheet URL shared by the front-end (header.php) and the block editor canvas.
+ */
+function roadmap_starter_google_fonts_url() : string {
+	return 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap';
+}
+
+/**
+ * wp-admin (parent document) tweaks only — inserter preview width etc. The editor *canvas* is styled
+ * through add_editor_style() in roadmap_starter_setup(), not here.
+ */
 add_action(
 	'admin_enqueue_scripts',
 	function () {
-		wp_enqueue_style( THEME_SLUG . '-wp-admin-css', roadmap_starter_public_uri( 'css/style-editor.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
-		// wp_enqueue_style( 'twbs-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css' );
+		wp_enqueue_style( THEME_SLUG . '-wp-admin-css', roadmap_starter_public_uri( 'css/admin.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
+	}
+);
+
+/**
+ * Load the theme's web fonts inside the editor canvas (works for both the iframed and the legacy
+ * non-iframed editor). Front-end loading stays in header.php.
+ */
+add_action(
+	'enqueue_block_assets',
+	function () {
+		if ( is_admin() ) {
+			wp_enqueue_style( THEME_SLUG . '-editor-fonts', roadmap_starter_google_fonts_url(), array(), null );
+		}
 	}
 );
 
@@ -293,6 +316,17 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 
 		// Add theme support for selective refresh for widgets.
 		add_theme_support( 'customize-selective-refresh-widgets' );
+
+		/*
+		 * Editor canvas styles. The iframed editor (our ACF blocks are block API v3) gets this file injected
+		 * as-is, so `:root` / `html` / `body` are the canvas; the legacy non-iframed editor has WordPress rewrite
+		 * those to `.editor-styles-wrapper` and prefix the rest. Either way the full front-end bundle (Bootstrap
+		 * --bs-* variables, base font, block styles) applies inside the editor exactly as on the front-end.
+		 * Never nest the theme import under a selector in style-editor.scss instead — that produces
+		 * `#editor .wp-block :root` / `... body` selectors that match nothing.
+		 */
+		add_theme_support( 'editor-styles' );
+		add_editor_style( 'public/css/style-editor.min.css' );
 
 		/**
 		 * Add support for core custom logo.

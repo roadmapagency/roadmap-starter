@@ -1,0 +1,10 @@
+// wp-admin PARENT-document tweaks (enqueued on admin_enqueue_scripts). Nothing in here reaches the editor
+// canvas — canvas styling is style-editor.scss, loaded via add_editor_style().
+
+.block-editor-inserter__preview-container {
+	width: 400px;
+}
+
+.blocks-widgets-container .editor-styles-wrapper {
+	max-width: none !important;
+}
