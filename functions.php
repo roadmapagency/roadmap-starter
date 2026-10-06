@@ -443,6 +443,11 @@ require get_template_directory() . '/inc/customizer.php';
 require get_template_directory() . '/inc/helpers.php';
 
 /**
+ * Plugins the theme refuses to run without (admin notice, activation guard).
+ */
+require get_template_directory() . '/inc/plugin-dependencies.php';
+
+/**
  * Synced-pattern resolution (shared sections referenced by many pages).
  */
 require get_template_directory() . '/inc/patterns.php';
