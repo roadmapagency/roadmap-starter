@@ -6,7 +6,7 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 
 Requires at least: 4.5
 Tested up to: 6.6.1
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GNU General Public License v2 or later
 License URI: LICENSE
 
@@ -29,6 +29,11 @@ Roadmap Starter's custom base wordpress theme
 roadmap-starter includes support for Infinite Scroll in Jetpack.
 
 == Changelog ==
+
+= 2.1.0 - Oct 7 2026 =
+* Added: Minor and patch releases of Roadmap Starter (2.x) now install automatically through WordPress's background updater. A new major version still waits for someone to click Update. Change it with the `roadmap_starter_auto_update` filter.
+* Changed: Updates come from the now-public GitHub repository; no token is needed (`ROADMAP_STARTER_GITHUB_TOKEN` is optional, for rate limits).
+* Upgrade: sites on 2.0.0 need this one update installed (click Update, or enable auto-updates for the theme); later 2.x releases then install on their own.
 
 = 2.0.0 - Oct 7 2026 =
 * Changed: Roadmap Starter is now a parent theme. Each site is a child theme holding only its own blocks, design tokens, styles, templates and post types; the block framework, base styles, templates and build are shared and update in place. New sites: `wp roadmap-starter scaffold-child <slug>`.
