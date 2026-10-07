@@ -158,9 +158,11 @@ final class Child_Command {
 			}
 		}
 		foreach ( $child_php as $file ) {
-			$rel = substr( $file, strlen( $dir ) + 1 );
+			$rel  = substr( $file, strlen( $dir ) + 1 );
+			$code = (string) file_get_contents( $file );
 			foreach ( self::functions( $file ) as $fn ) {
-				if ( isset( $parent_fns[ $fn ] ) ) {
+				// A definition behind `if ( ! function_exists( 'fn' ) )` can't redeclare.
+				if ( isset( $parent_fns[ $fn ] ) && ! preg_match( "/function_exists\\(\\s*['\"]" . preg_quote( $fn, '/' ) . "['\"]\\s*\\)/", $code ) ) {
 					WP_CLI::warning( "{$rel}: redeclares {$fn}() from the parent's {$parent_fns[ $fn ]} — fatal error." );
 					++$errors;
 				}
