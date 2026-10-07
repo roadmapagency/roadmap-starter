@@ -46,7 +46,21 @@ abstract class AbstractBlock implements BlocksInterface {
 		add_action(
 			'acf/init',
 			function () use ( $field_set ) {
-				acf_add_local_field_group( $field_set->build() );
+				$group = $field_set->build();
+				// Blocks normally end register_fields() with ->setLocation( 'block', '==', … ). Older forks set
+				// it centrally instead, so default to "this block" rather than leaving the fields unattached.
+				if ( empty( $group['location'] ) ) {
+					$group['location'] = array(
+						array(
+							array(
+								'param'    => 'block',
+								'operator' => '==',
+								'value'    => static::get_acf_slug(),
+							),
+						),
+					);
+				}
+				acf_add_local_field_group( $group );
 			},
 			20
 		);
@@ -170,7 +184,12 @@ abstract class AbstractBlock implements BlocksInterface {
 		}
 
 		$classes  = $align ? 'align' . $align : '';
-		$classes .= ' container-fluid wp-block-' . Identity::block_prefix() . $this->get_css_classes( $block );
+		/**
+		 * Layout class on every block root. Child themes migrated from older forks, whose blocks were not
+		 * wrapped in a fluid container, set this to '' with the `roadmap_starter_block_container_class` filter.
+		 */
+		$container = (string) apply_filters( 'roadmap_starter_block_container_class', 'container-fluid', self::get_slug() );
+		$classes  .= ( '' !== $container ? ' ' . $container : '' ) . ' wp-block-' . Identity::block_prefix() . $this->get_css_classes( $block );
 
 		$args = array();
 		/** @var \StoutLogic\AcfBuilder\FieldsBuilder $field_set */
@@ -186,7 +205,7 @@ abstract class AbstractBlock implements BlocksInterface {
 			$args[ $build['name'] ] = $value;
 		}
 
-		$args = apply_filters( 'roadmap_starter/before_block_render', $args );
+		$args = apply_filters( 'roadmap_starter/before_block_render', $args, self::get_slug() );
 
 		extract( $args );
 
