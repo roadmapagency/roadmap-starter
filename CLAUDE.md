@@ -4,7 +4,8 @@ This theme is its own git repo and is versioned with [semver](https://semver.org
 goes through a branch and ends in a tagged release. Never commit theme changes straight to `main`.
 
 The version lives in **three places that must always match**: `style.css` (`Version:`), `readme.txt`
-(`Stable tag:`) and `package.json` (`"version"`). `npm run package` reads `style.css` to name the zip
+(`Stable tag:`) and `package.json` (`"version"`, plus the two root
+`"version"` entries at the top of `package-lock.json`). `npm run package` reads `style.css` to name the zip
 (`<theme>-v<version>.zip`).
 
 ## Steps
@@ -28,7 +29,7 @@ The version lives in **three places that must always match**: `style.css` (`Vers
      * Fixed: CardGrid icons misaligned on mobile.
      * Upgrade: run `wp <theme> fields migrate` after deploying.
      ```
-   - Bump `Version:` in `style.css`, `Stable tag:` in `readme.txt` and `"version"` in `package.json`.
+   - Bump `Version:` in `style.css`, `Stable tag:` in `readme.txt` and `"version"` in `package.json` (and the root of `package-lock.json`).
      Check that all three match: `grep -m1 'Version:' style.css; grep 'Stable tag:' readme.txt; grep -m1 '"version"' package.json`.
    - Run `npm run build` and confirm it compiles before merging.
 4. **Merge** into `main`: `git switch main && git merge --no-ff <branch>`, then delete the branch.
