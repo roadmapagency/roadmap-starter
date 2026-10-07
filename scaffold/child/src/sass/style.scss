@@ -1,7 +1,10 @@
 /*!
 Theme Name: {{NAME}}
 */
+// Drop the parent "custom" import to start from a blank slate (header.php/footer.php then need their
+// own styles here).
 @import "tokens";                              // this site's design tokens
 @import "roadmap-starter/src/sass/framework";  // parent: mixins, Bootstrap, typography, base modules
+@import "roadmap-starter/src/sass/custom";     // parent defaults: header/nav, footer, block spacing, angles
 @import "roadmap-blocks";                      // this theme's blocks (then any parent block not overridden)
-@import "custom";                              // this site's styles
+@import "custom";                              // this site's styles; override parent defaults here
