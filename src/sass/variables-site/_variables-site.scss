@@ -182,16 +182,6 @@ $dropdown-padding-y: 0 !default;
 $dropdown-item-padding-y: 18px !default;
 $dropdown-item-padding-x: 12px !default;
 
-@media (max-width: map-get($grid-breakpoints, md)) {
-		.dropdown-menu{
-				background-color: transparent!important;
-		}
-
-		.dropdown-menu.show{
-				margin-left: 20px!important;
-		}
-
-}
 
 
 $pagination-active-bg: map_get($theme-colors, primary) !default;

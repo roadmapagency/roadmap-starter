@@ -1,3 +1,16 @@
+// Mobile dropdowns open inline (was in variables-site, which must only hold variables).
+@media (max-width: map-get($grid-breakpoints, md)) {
+		.dropdown-menu{
+				background-color: transparent!important;
+		}
+
+		.dropdown-menu.show{
+				margin-left: 20px!important;
+		}
+
+}
+
+
 //@font-face {
 //	font-family: "Expressway";
 //	src: url('../fonts/expressway_rg-webfont.woff2') format('woff2'),
