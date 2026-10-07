@@ -175,8 +175,10 @@ abstract class AbstractBlock implements BlocksInterface {
 		// width. When the block locks alignment (`supports.align === false`) fall back to the
 		// alignment it was registered with, so a band always gets its `alignfull`/`alignwide`
 		// wrapper regardless of how it was inserted.
+		// Children migrated from older forks turn this off (`roadmap_starter_block_align_fallback`) so pages
+		// keep the alignment they rendered with before.
 		$align = ! empty( $block['align'] ) ? $block['align'] : '';
-		if ( '' === $align && function_exists( 'acf_get_block_type' ) ) {
+		if ( '' === $align && function_exists( 'acf_get_block_type' ) && apply_filters( 'roadmap_starter_block_align_fallback', true, self::get_slug() ) ) {
 			$block_type = acf_get_block_type( self::get_acf_slug() );
 			if ( $block_type && isset( $block_type['supports']['align'] ) && false === $block_type['supports']['align'] && ! empty( $block_type['align'] ) ) {
 				$align = $block_type['align'];
@@ -192,6 +194,9 @@ abstract class AbstractBlock implements BlocksInterface {
 		$classes  .= ( '' !== $container ? ' ' . $container : '' ) . ' wp-block-' . Identity::block_prefix() . $this->get_css_classes( $block );
 
 		$args = array();
+		// Fields never saved on a block (added after it was inserted) render their declared default, unless a
+		// child migrated from an older fork keeps the old behaviour (`roadmap_starter_block_default_values`).
+		$use_defaults = (bool) apply_filters( 'roadmap_starter_block_default_values', true, self::get_slug() );
 		/** @var \StoutLogic\AcfBuilder\FieldsBuilder $field_set */
 		$field_set = $this->field_set;
 		foreach ( $field_set->getFields() as $field ) {
@@ -199,7 +204,7 @@ abstract class AbstractBlock implements BlocksInterface {
 			$value                  = get_field( $build['name'] );
 			// A block saved without this attribute returns null (not the schema default) — fall back to
 			// the field's declared default so e.g. true/false toggles that default ON stay on.
-			if ( null === $value && isset( $build['default_value'] ) && '' !== $build['default_value'] ) {
+			if ( null === $value && isset( $build['default_value'] ) && '' !== $build['default_value'] && $use_defaults ) {
 				$value = $build['default_value'];
 			}
 			$args[ $build['name'] ] = $value;
