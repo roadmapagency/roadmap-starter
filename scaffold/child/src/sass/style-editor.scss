@@ -1,0 +1,13 @@
+// Block-editor canvas stylesheet (add_editor_style() in the parent). Import the front-end bundle at the
+// TOP LEVEL — never nest it under a selector (that kills :root/body rules and every --bs-* variable).
+@import "style";
+
+html :where(.wp-block) {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	max-width: none !important;
+}
+
+.is-root-container > .wp-block:first-child .wp-block-#{$block-prefix} { margin-top: 0 !important; }
+.is-root-container > .wp-block:last-child .wp-block-#{$block-prefix}.has-bg { margin-bottom: 0 !important; }

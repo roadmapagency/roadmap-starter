@@ -1,0 +1,12 @@
+// {{NAME}} design tokens. Imported before roadmap-starter/src/sass/framework, whose values are all
+// !default — set only what differs here (no !default). See the parent's
+// src/sass/variables-site/_variables-site.scss for the full list.
+
+$block-prefix: '{{SLUG}}'; // must match the roadmap_starter_block_prefix filter in functions.php
+
+// $theme-colors: (
+// 		text-color: #343741,
+// 		primary: #000,
+// 		secondary: #33C9FF,
+// );
+// $font-family-base: 'Inter', sans-serif;

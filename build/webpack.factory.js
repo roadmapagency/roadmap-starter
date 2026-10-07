@@ -199,6 +199,8 @@ module.exports = function ( { themeDir, parentDir = path.resolve( __dirname, '..
         },
         resolve: {
             modules: [path.resolve(themeDir, 'node_modules'), 'node_modules'],
+            // Child themes import shared parent sources, e.g. `import "roadmap-starter/src/js/navigation"`.
+            alias: { 'roadmap-starter': parentDir },
         },
         resolveLoader: {
             modules: [path.resolve(themeDir, 'node_modules'), 'node_modules'],
@@ -254,17 +256,21 @@ module.exports = function ( { themeDir, parentDir = path.resolve( __dirname, '..
             // ImageMinimizerPlugin detects format via path.extname(), which a query
             // suffix breaks (".jpg?v=abc123" → unsupported → skipped). The copied files
             // are referenced by plain path from templates, so the query was cosmetic.
+            // Parent images first (bootstrap-icons, fontawesome, placeholder — used by parent helpers and
+            // templates), then the theme's own, which win on the same path.
             new CopyPlugin({
-                patterns: [
-                    {
-                        from: `${path.resolve(config.srcDir, './images')}/**/*`,
+                patterns: [ parentDir, themeDir ].filter( function ( dir, i, all ) {
+                    return all.indexOf( dir ) === i && fs.existsSync( path.resolve( dir, 'src/images' ) );
+                } ).map( function ( dir ) {
+                    return {
+                        from: `${path.resolve(dir, 'src/images')}/**/*`,
                         to: './images/[path][name][ext]',
-                        context: path.resolve(themeDir, 'src/images')
-                    }
-                ],
-                // options: {
-                //     context: config.srcDir,
-                // }
+                        context: path.resolve(dir, 'src/images'),
+                        force: true,
+                        globOptions: { ignore: ['**/.gitkeep'] },
+                        noErrorOnMissing: true,
+                    };
+                } ),
             }),
     
             // Image optimization via sharp (raster) + svgo (svg). Both are native to

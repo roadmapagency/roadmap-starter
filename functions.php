@@ -280,7 +280,7 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 		add_theme_support( 'post-thumbnails' );
 
 		// This theme uses wp_nav_menu() in one location.
-		require_once 'inc/bootstrap-navwalker.php';
+		require_once get_template_directory() . '/inc/bootstrap-navwalker.php';
 		register_nav_menus(
 			array(
 				'top-nav'        => esc_html__( 'Top Nav', 'roadmap-starter' ),
@@ -293,7 +293,7 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 			)
 		);
 
-		require_once 'inc/bootstrap-pagination.php';
+		require_once get_template_directory() . '/inc/bootstrap-pagination.php';
 
 		/*
 		 * Switch default core markup for search form, comment form, and comments
@@ -485,6 +485,11 @@ require get_template_directory() . '/inc/updater.php';
  * Theme-owned WP-CLI commands.
  */
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	// New sites are child themes of this one; `clone` (full copy) is kept for existing skills only.
+	require_once get_template_directory() . '/inc/cli/class-child-command.php';
+	\WP_CLI::add_command( 'roadmap-starter scaffold-child', array( \RoadmapStarter\CLI\Child_Command::class, 'scaffold_child' ) );
+	\WP_CLI::add_command( 'roadmap-starter child-audit', array( \RoadmapStarter\CLI\Child_Command::class, 'child_audit' ) );
+
 	require_once get_template_directory() . '/inc/cli/class-clone-command.php';
 	\WP_CLI::add_command(
 		'roadmap-starter clone',

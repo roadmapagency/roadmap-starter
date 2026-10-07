@@ -1,0 +1,6 @@
+// {{NAME}} site styles.
+
+// Base vertical rhythm for blocks (see the parent's _custom.scss for the full defaults).
+.entry-content .wp-block-#{$block-prefix}:first-child {
+	margin-top: 0;
+}

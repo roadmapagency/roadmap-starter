@@ -1,0 +1,14 @@
+# Excluded from the release zip (rsync --exclude-from; leading / = repo root).
+/.git
+/.github
+/.idea
+/build/node_modules
+/bin
+/node_modules
+/public
+/tmp
+/dist
+/.distignore
+/.gitignore
+*.zip
+.DS_Store
