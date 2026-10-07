@@ -8,6 +8,7 @@
 namespace RoadmapStarter\Blocks;
 
 use ReflectionClass;
+use RoadmapStarter\Identity;
 use RoadmapStarter\Vendor\StoutLogic\AcfBuilder\FieldsBuilder;
 
 /**
@@ -78,9 +79,12 @@ abstract class AbstractBlock implements BlocksInterface {
 	 *
 	 * Stored as `ai_content` (the name ai-by-roadmap and the block switcher read): the verbatim
 	 * source copy the block was filled from, kept stable so the block can be swapped for another.
+	 *
+	 * ai-by-roadmap 0.4+ adds this field itself (same key and position) for themes that declare
+	 * `ai-by-roadmap` support, so it is only added here for an older plugin.
 	 */
 	protected function add_source_content_field() {
-		if ( $this->field_set->fieldExists( 'ai_content' ) ) {
+		if ( class_exists( '\Roadmap\AiByRoadmap\Theme\SourceField' ) || $this->field_set->fieldExists( 'ai_content' ) ) {
 			return;
 		}
 		$this->field_set->addTextArea(
@@ -130,7 +134,7 @@ abstract class AbstractBlock implements BlocksInterface {
 	 * @throws \ReflectionException
 	 */
 	public static function get_block_class_name( $suffix = '' ) {
-		return 'wp-block-' . THEME_SLUG . '-' . strtolower( self::get_slug() ) . $suffix;
+		return 'wp-block-' . Identity::block_prefix() . '-' . strtolower( self::get_slug() ) . $suffix;
 	}
 
 	/**
@@ -166,14 +170,20 @@ abstract class AbstractBlock implements BlocksInterface {
 		}
 
 		$classes  = $align ? 'align' . $align : '';
-		$classes .= ' container-fluid wp-block-' . THEME_SLUG . $this->get_css_classes( $block );
+		$classes .= ' container-fluid wp-block-' . Identity::block_prefix() . $this->get_css_classes( $block );
 
 		$args = array();
 		/** @var \StoutLogic\AcfBuilder\FieldsBuilder $field_set */
 		$field_set = $this->field_set;
 		foreach ( $field_set->getFields() as $field ) {
 			$build                  = $field->build();
-			$args[ $build['name'] ] = get_field( $build['name'] );
+			$value                  = get_field( $build['name'] );
+			// A block saved without this attribute returns null (not the schema default) — fall back to
+			// the field's declared default so e.g. true/false toggles that default ON stay on.
+			if ( null === $value && isset( $build['default_value'] ) && '' !== $build['default_value'] ) {
+				$value = $build['default_value'];
+			}
+			$args[ $build['name'] ] = $value;
 		}
 
 		$args = apply_filters( 'roadmap_starter/before_block_render', $args );

@@ -59,4 +59,23 @@ final class Identity {
 	public static function function_prefix(): string {
 		return str_replace( '-', '_', self::slug() );
 	}
+
+	/**
+	 * Prefix for block CSS classes: `wp-block-{prefix}` / `wp-block-{prefix}-{block}`.
+	 *
+	 * Defaults to the active theme's directory, so existing sites keep their classes. A child theme
+	 * pins it with the `roadmap_starter_block_prefix` filter (and `$block-prefix` in its SCSS) so a
+	 * directory rename can never desync markup from styles.
+	 */
+	public static function block_prefix(): string {
+		return (string) apply_filters( 'roadmap_starter_block_prefix', self::slug() );
+	}
+
+	/**
+	 * PHP namespace of the active (child) theme's blocks: `{namespace}\{Block}\{Block}` in
+	 * acf-blocks/Blocks/{Block}/{Block}.php. Filter `roadmap_starter_block_namespace`.
+	 */
+	public static function block_namespace(): string {
+		return trim( (string) apply_filters( 'roadmap_starter_block_namespace', 'RoadmapStarter\\Blocks' ), '\\' );
+	}
 }

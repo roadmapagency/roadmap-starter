@@ -1,3 +1,9 @@
+// Site tokens. Every value is !default: a child theme sets its own values (no !default) before
+// importing roadmap-starter/src/sass/framework, and those win.
+
+// Block CSS class prefix — must match Identity::block_prefix() (PHP).
+$block-prefix: 'roadmap-starter' !default;
+
 $theme-colors: (
 		text-color: #343741,
 		primary: #000,
@@ -11,52 +17,52 @@ $theme-colors: (
 		bright-green-light: #EBFAFF,
 		bright-green-light-active: #99E4FF,
 		bright-green-light-hover: #EBFAFF,
-);
+) !default;
 
-$body-bg: map_get($theme-colors, light);
-$body-color: map_get($theme-colors, text-color);
+$body-bg: map_get($theme-colors, light) !default;
+$body-color: map_get($theme-colors, text-color) !default;
 
 
-$btn-color: #fff!important;
-$btn-font-weight: bold;
-$btn-padding-x: 29px;
-$btn-padding-y: 12px;
-$btn-border-radius: 36px;
-$btn-border-width: 3px;
-$btn-line-height: 1.5;
-$enable-rounded: true;
-$bs-btn-hover-bg: map_get($theme-colors, bright-green-light-active);
-$modal-md: 600px;
-$modal-header-padding-y: 12px;
-$modal-header-padding-x: 12px;
+$btn-color: #fff!important !default;
+$btn-font-weight: bold !default;
+$btn-padding-x: 29px !default;
+$btn-padding-y: 12px !default;
+$btn-border-radius: 36px !default;
+$btn-border-width: 3px !default;
+$btn-line-height: 1.5 !default;
+$enable-rounded: true !default;
+$bs-btn-hover-bg: map_get($theme-colors, bright-green-light-active) !default;
+$modal-md: 600px !default;
+$modal-header-padding-y: 12px !default;
+$modal-header-padding-x: 12px !default;
 
-$link-color: map-get($theme-colors, primary);
-$link-decoration: none;
+$link-color: map-get($theme-colors, primary) !default;
+$link-decoration: none !default;
 //$link-underline: #F1CA2E;
-$link-hover-color: lighten($link-color, 10%);
-$link-hover-decoration: none;
+$link-hover-color: lighten($link-color, 10%) !default;
+$link-hover-decoration: none !default;
 
 
-$navbar-light-color: map-get($theme-colors, secondary);
-$navbar-light-hover-color: lighten(map-get($theme-colors, secondary), 15%);
-$navbar-light-active-color: lighten(map-get($theme-colors, secondary), 15%);
+$navbar-light-color: map-get($theme-colors, secondary) !default;
+$navbar-light-hover-color: lighten(map-get($theme-colors, secondary), 15%) !default;
+$navbar-light-active-color: lighten(map-get($theme-colors, secondary), 15%) !default;
 
-$navbar-dark-color: map-get($theme-colors, primary);
-$navbar-dark-hover-color: darken(map-get($theme-colors, primary), 20%);
-$navbar-dark-active-color: darken(map-get($theme-colors, primary), 20%);
+$navbar-dark-color: map-get($theme-colors, primary) !default;
+$navbar-dark-hover-color: darken(map-get($theme-colors, primary), 20%) !default;
+$navbar-dark-active-color: darken(map-get($theme-colors, primary), 20%) !default;
 
-$navbar-nav-link-padding-x: 16px;
-$navbar-toggler-border-radius: 8px;
+$navbar-nav-link-padding-x: 16px !default;
+$navbar-toggler-border-radius: 8px !default;
 
-$btn-close-opacity: 1;
-$btn-close-color: map-get($theme-colors, text-color);
+$btn-close-opacity: 1 !default;
+$btn-close-color: map-get($theme-colors, text-color) !default;
 
 /** TYPOGRAPHY **/
-$font-family-base: 'Inter', sans-serif;
-$font-family-sans-serif: 'Inter', sans-serif;
+$font-family-base: 'Inter', sans-serif !default;
+$font-family-sans-serif: 'Inter', sans-serif !default;
 
-$paragraph-margin-bottom: 2rem;
-$hr-margin-y: 4rem;
+$paragraph-margin-bottom: 2rem !default;
+$hr-margin-y: 4rem !default;
 
 // Grid breakpoints
 //
@@ -68,10 +74,10 @@ $grid-breakpoints: (
 		md: 768px,
 		lg: 992px,
 		xl: 1600px
-);
+) !default;
 
 
-$content-max-width: 1200px;
+$content-max-width: 1200px !default;
 
 // Grid containers
 //
@@ -79,23 +85,23 @@ $content-max-width: 1200px;
 $container-max-widths: (
 		lg: $content-max-width,
 		xl: $content-max-width
-);
+) !default;
 
 
 $align-max-widths: (
 		none: map_get($grid-breakpoints, md),
 		full: 100%,
 		wide: $content-max-width,
-);
+) !default;
 
 // Grid columns
 //
 // Set the number of columns and specify the width of the gutters.
-$grid-columns: 12;
-$grid-gutter-width: 1.5rem;
+$grid-columns: 12 !default;
+$grid-gutter-width: 1.5rem !default;
 
-$enable-negative-margins: true;
-$spacer: 1rem;
+$enable-negative-margins: true !default;
+$spacer: 1rem !default;
 $spacers: (
 		0: 0,
 		1: $spacer * .25,
@@ -108,11 +114,11 @@ $spacers: (
 		7: ($spacer * 8),
 		8: ($spacer * 10),
 		20: ($spacer * 20)
-);
+) !default;
 
-$nav-height: 125px;
-$nav-item-margin-bottom: 45px;
-$enable-caret: false;
+$nav-height: 125px !default;
+$nav-item-margin-bottom: 45px !default;
+$enable-caret: false !default;
 
 $font-sizes: (
 		0: 0,
@@ -124,57 +130,57 @@ $font-sizes: (
 		6: (100 * 2),
 		7: (100 * 3),
 		8: (100 * 4),
-);
+) !default;
 
-$headings-color: map-get($theme-colors, primary);
-$headings-font-weight: bold;
-$font-size-base: 1rem;
+$headings-color: map-get($theme-colors, primary) !default;
+$headings-font-weight: bold !default;
+$font-size-base: 1rem !default;
 
-$h1-font-size: 52px;
-$h2-font-size: 39px;
-$h3-font-size: 31px;
-$h4-font-size: 25px;
-$h5-font-size: 18px;
-$h6-font-size: 12px;
+$h1-font-size: 52px !default;
+$h2-font-size: 39px !default;
+$h3-font-size: 31px !default;
+$h4-font-size: 25px !default;
+$h5-font-size: 18px !default;
+$h6-font-size: 12px !default;
 
 
 // This will multiply the header font size when the viewport is smaller than $htag-responsive-breakpoint.
 // Use a value less than 1 to make headers smaller on mobile
-$htag-responsive-multiplier: 0.8;
-$htag-responsive-breakpoint: md;
+$htag-responsive-multiplier: 0.8 !default;
+$htag-responsive-breakpoint: md !default;
 
-$input-color: map_get($theme-colors, text-color);
-$input-border-width: 0;
-$input-border-radius: 5px;
-$input-bg: map_get($theme-colors, bright-green-light);
-$input-padding-y: 12px;
-$input-padding-x: 20px;
-$input-font-weight: bold;
-$form-label-margin-bottom: map-get($spacers, 4);
-$form-label-font-weight: bold;
-$form-label-font-size: 16px;
+$input-color: map_get($theme-colors, text-color) !default;
+$input-border-width: 0 !default;
+$input-border-radius: 5px !default;
+$input-bg: map_get($theme-colors, bright-green-light) !default;
+$input-padding-y: 12px !default;
+$input-padding-x: 20px !default;
+$input-font-weight: bold !default;
+$form-label-margin-bottom: map-get($spacers, 4) !default;
+$form-label-font-weight: bold !default;
+$form-label-font-size: 16px !default;
 
-$accordion-button-active-color: map_get($theme-colors, text-color);
-$accordion-bg: map_get($theme-colors, bright-green-light);
-$accordion-active: map_get($theme-colors, bright-green-light);
-$accordion-button-active-bg: map_get($theme-colors, bright-green-light);
-$accordion-border-width: 0;
-$accordion-padding-x: 32px;
-$accordion-padding-y: 32px;
-$accordion-icon-width: 22px;
-$accordion-icon-color: map_get($theme-colors, text-color);
-$accordion-button-icon:         url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path fill='#{$accordion-icon-color}' d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/></svg>");
-$accordion-button-active-icon:  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path fill='#{$accordion-icon-color}' d='M432 256c0 17.7-14.3 32-32 32H48c-17.7 0-32-14.3-32-32s14.3-32 32-32h352c17.7 0 32 14.3 32 32z'/></svg>");
-$accordion-button-focus-box-shadow: 0 0 0 .25rem map_get($theme-colors, secondary);
+$accordion-button-active-color: map_get($theme-colors, text-color) !default;
+$accordion-bg: map_get($theme-colors, bright-green-light) !default;
+$accordion-active: map_get($theme-colors, bright-green-light) !default;
+$accordion-button-active-bg: map_get($theme-colors, bright-green-light) !default;
+$accordion-border-width: 0 !default;
+$accordion-padding-x: 32px !default;
+$accordion-padding-y: 32px !default;
+$accordion-icon-width: 22px !default;
+$accordion-icon-color: map_get($theme-colors, text-color) !default;
+$accordion-button-icon:         url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path fill='#{$accordion-icon-color}' d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/></svg>") !default;
+$accordion-button-active-icon:  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path fill='#{$accordion-icon-color}' d='M432 256c0 17.7-14.3 32-32 32H48c-17.7 0-32-14.3-32-32s14.3-32 32-32h352c17.7 0 32 14.3 32 32z'/></svg>") !default;
+$accordion-button-focus-box-shadow: 0 0 0 .25rem map_get($theme-colors, secondary) !default;
 
-$dropdown-spacer: 0;
-$dropdown-border-radius: 0;
-$dropdown-border-width: 0;
-$dropdown-link-active-bg: map_get($theme-colors, bright-green-light-hover);
-$dropdown-link-hover-bg: map_get($theme-colors, bright-green-light-hover);
-$dropdown-padding-y: 0;
-$dropdown-item-padding-y: 18px;
-$dropdown-item-padding-x: 12px;
+$dropdown-spacer: 0 !default;
+$dropdown-border-radius: 0 !default;
+$dropdown-border-width: 0 !default;
+$dropdown-link-active-bg: map_get($theme-colors, bright-green-light-hover) !default;
+$dropdown-link-hover-bg: map_get($theme-colors, bright-green-light-hover) !default;
+$dropdown-padding-y: 0 !default;
+$dropdown-item-padding-y: 18px !default;
+$dropdown-item-padding-x: 12px !default;
 
 @media (max-width: map-get($grid-breakpoints, md)) {
 		.dropdown-menu{
@@ -188,10 +194,10 @@ $dropdown-item-padding-x: 12px;
 }
 
 
-$pagination-active-bg: map_get($theme-colors, primary);
+$pagination-active-bg: map_get($theme-colors, primary) !default;
 
-$card-border-color: map_get($theme-colors, secondary);
-$card-border-radius: 5px;
-$card-border-width: 4px;
-$card-spacer-y: 32px;
-$card-spacer-x: 32px;
+$card-border-color: map_get($theme-colors, secondary) !default;
+$card-border-radius: 5px !default;
+$card-border-width: 4px !default;
+$card-spacer-y: 32px !default;
+$card-spacer-x: 32px !default;

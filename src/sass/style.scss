@@ -19,16 +19,7 @@ Underscores is distributed under the terms of the GNU GPL v2 or later.
 Normalizing styles have been helped along thanks to the fine work of
 Nicolas Gallagher and Jonathan Neal https://necolas.github.io/normalize.css/
 */
-@import "variables-site/variables-site";
-@import "mixins/mixins-master";
-@import "bootstrap/scss/bootstrap";
-@import "typography/font-sizes";
-@import "modules/accessibility";
-@import "modules/alignments";
-@import "modules/clearings";
-@import "site/site";
-@import "modules/infinite-scroll";
-@import "media/media";
+@import "framework";
 @import "acf-blocks/block-styles";
 //@import "blocks/blocks";
 @import "custom";

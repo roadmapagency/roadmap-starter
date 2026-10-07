@@ -15,7 +15,21 @@
 function roadmap_starter_public_dir( $relative_path = '' ) {
 	$relative_path = trim( $relative_path, '/' );
 
-	return __DIR__ . '/../public/' . $relative_path;
+	return get_stylesheet_directory() . '/public/' . $relative_path;
+}
+
+/**
+ * Cache-busting version for a built asset in the active theme's public folder: its mtime, so every
+ * build invalidates browser caches. Falls back to the theme version when the file is missing.
+ *
+ * @param string $relative_path Path relative to public/.
+ *
+ * @return string
+ */
+function roadmap_starter_asset_version( $relative_path ) {
+	$file = roadmap_starter_public_dir( $relative_path );
+
+	return file_exists( $file ) ? (string) filemtime( $file ) : (string) wp_get_theme()->get( 'Version' );
 }
 
 /**
@@ -124,7 +138,17 @@ function roadmap_starter_bootstrap_icon( $name, $classes = '', $tag = 'div' ) {
 }
 
 function roadmap_starter_fontawesome_icon_svg( object|string $icon, string $style = 'solid', $classes = '', $tag = 'div' ) {
-	return file_get_contents( __DIR__ . '/../public/images/fontawesome/' . $style . '/' . $icon . '.svg' );
+	// The active theme's built (minified) copy, else the parent's source SVG — the parent ships
+	// without a public/ build when a child theme is active.
+	foreach ( array( roadmap_starter_public_dir( 'images/fontawesome' ), get_template_directory() . '/src/images/fontawesome' ) as $dir ) {
+		$file = $dir . '/' . $style . '/' . $icon . '.svg';
+		if ( is_readable( $file ) ) {
+			return file_get_contents( $file );
+		}
+	}
+
+	// Block-panel icons only; a missing glyph must not log a warning on every request.
+	return '';
 }
 
 function roadmap_starter_fontawesome_icon( object|string $icon, string $style = 'solid', $classes = '', $tag = 'div' ) {

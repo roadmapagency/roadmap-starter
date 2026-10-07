@@ -9,16 +9,16 @@
  * Deactivate link on the required plugins while the theme is active.
  *
  *  - Advanced Custom Fields PRO: every block, the options pages, the FieldsBuilder.
- *  - ACF Image Aspect Ratio Crop: the `image_aspect_ratio_crop` field type the
- *    ImageAndText block uses (without the plugin ACF does not know the field).
- *  - AI by Roadmap: block schemas for AI composition, synced-pattern tooling and
- *    the MCP server agents use. It in turn requires mcp-adapter.
+ *  - AI by Roadmap (ROADMAP_STARTER_MIN_PLUGIN or newer): the block schemas, the
+ *    Source Content field and icon search (declared via
+ *    add_theme_support('ai-by-roadmap')), plus the MCP server agents use. It in
+ *    turn requires mcp-adapter.
+ *
+ * A child theme adds its own requirements with the roadmap_starter_required_plugins
+ * filter (e.g. ACF Image Aspect Ratio Crop for the scaffold's ImageAndText block).
  *
  * Optional, with graceful fallbacks: Yoast SEO (breadcrumbs), ACF Font Awesome
  * (blocks render Font Awesome from the theme's own SVG files, not the plugin).
- *
- * Forks made with the clone tooling get the renamed function prefix and text
- * domain automatically; edit the list below per site if a fork drops a block.
  *
  * @package roadmap-starter
  */
@@ -35,14 +35,12 @@ function roadmap_starter_required_plugins(): array {
 			'active' => static fn(): bool => function_exists( 'acf_register_block_type' ) && defined( 'ACF_PRO' ),
 			'slug'   => null, // commercial, not on WordPress.org
 		),
-		'acf-image-aspect-ratio-crop/acf-image-aspect-ratio-crop.php' => array(
-			'label'  => 'ACF Image Aspect Ratio Crop',
-			'active' => static fn(): bool => class_exists( 'npx_acf_plugin_image_aspect_ratio_crop' ),
-			'slug'   => 'acf-image-aspect-ratio-crop',
-		),
 		'ai-by-roadmap/ai-by-roadmap.php'                         => array(
-			'label'  => 'AI by Roadmap',
-			'active' => static fn(): bool => class_exists( '\\Roadmap\\AiByRoadmap\\Plugin' ),
+			/* translators: %s: minimum plugin version */
+			'label'  => sprintf( 'AI by Roadmap %s or newer', ROADMAP_STARTER_MIN_PLUGIN ),
+			// The plugin provides the block schemas, the Source Content field and icon search.
+			'active' => static fn(): bool => defined( '\\Roadmap\\AiByRoadmap\\VERSION' )
+				&& version_compare( \Roadmap\AiByRoadmap\VERSION, ROADMAP_STARTER_MIN_PLUGIN, '>=' ),
 			'slug'   => null, // github.com/roadmapagency/ai-by-roadmap
 		),
 	);

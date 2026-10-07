@@ -29,8 +29,11 @@ $headers: (
 	@return $number;
 }
 
+// Fluid heading sizes: min = mobile size, preferred = the desktop size as a share of a 1440px viewport,
+// max = desktop size. Interpolated so the preferred term compiles to a valid `<n>vw` length.
 @each $heading, $value in $headers {
+	$vw: strip-unit($value) / 1440 * 100;
 	#{$heading}, .#{$heading}{
-		font-size: clamp(max(16px, $value * $htag-responsive-multiplier), strip-unit(($value / 1440) * 100) + vw, $value);
+		font-size: clamp(max(16px, $value * $htag-responsive-multiplier), #{$vw}vw, $value);
 	}
 }
