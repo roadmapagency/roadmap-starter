@@ -8,6 +8,7 @@
 namespace RoadmapStarter\Blocks;
 
 use ReflectionClass;
+use RoadmapStarter\Identity;
 use RoadmapStarter\Vendor\StoutLogic\AcfBuilder\FieldsBuilder;
 
 /**
@@ -45,7 +46,21 @@ abstract class AbstractBlock implements BlocksInterface {
 		add_action(
 			'acf/init',
 			function () use ( $field_set ) {
-				acf_add_local_field_group( $field_set->build() );
+				$group = $field_set->build();
+				// Blocks normally end register_fields() with ->setLocation( 'block', '==', … ). Older forks set
+				// it centrally instead, so default to "this block" rather than leaving the fields unattached.
+				if ( empty( $group['location'] ) ) {
+					$group['location'] = array(
+						array(
+							array(
+								'param'    => 'block',
+								'operator' => '==',
+								'value'    => static::get_acf_slug(),
+							),
+						),
+					);
+				}
+				acf_add_local_field_group( $group );
 			},
 			20
 		);
@@ -78,9 +93,12 @@ abstract class AbstractBlock implements BlocksInterface {
 	 *
 	 * Stored as `ai_content` (the name ai-by-roadmap and the block switcher read): the verbatim
 	 * source copy the block was filled from, kept stable so the block can be swapped for another.
+	 *
+	 * ai-by-roadmap 0.4+ adds this field itself (same key and position) for themes that declare
+	 * `ai-by-roadmap` support, so it is only added here for an older plugin.
 	 */
 	protected function add_source_content_field() {
-		if ( $this->field_set->fieldExists( 'ai_content' ) ) {
+		if ( class_exists( '\Roadmap\AiByRoadmap\Theme\SourceField' ) || $this->field_set->fieldExists( 'ai_content' ) ) {
 			return;
 		}
 		$this->field_set->addTextArea(
@@ -130,7 +148,7 @@ abstract class AbstractBlock implements BlocksInterface {
 	 * @throws \ReflectionException
 	 */
 	public static function get_block_class_name( $suffix = '' ) {
-		return 'wp-block-' . THEME_SLUG . '-' . strtolower( self::get_slug() ) . $suffix;
+		return 'wp-block-' . Identity::block_prefix() . '-' . strtolower( self::get_slug() ) . $suffix;
 	}
 
 	/**
@@ -157,8 +175,10 @@ abstract class AbstractBlock implements BlocksInterface {
 		// width. When the block locks alignment (`supports.align === false`) fall back to the
 		// alignment it was registered with, so a band always gets its `alignfull`/`alignwide`
 		// wrapper regardless of how it was inserted.
+		// Children migrated from older forks turn this off (`roadmap_starter_block_align_fallback`) so pages
+		// keep the alignment they rendered with before.
 		$align = ! empty( $block['align'] ) ? $block['align'] : '';
-		if ( '' === $align && function_exists( 'acf_get_block_type' ) ) {
+		if ( '' === $align && function_exists( 'acf_get_block_type' ) && apply_filters( 'roadmap_starter_block_align_fallback', true, self::get_slug() ) ) {
 			$block_type = acf_get_block_type( self::get_acf_slug() );
 			if ( $block_type && isset( $block_type['supports']['align'] ) && false === $block_type['supports']['align'] && ! empty( $block_type['align'] ) ) {
 				$align = $block_type['align'];
@@ -166,17 +186,31 @@ abstract class AbstractBlock implements BlocksInterface {
 		}
 
 		$classes  = $align ? 'align' . $align : '';
-		$classes .= ' container-fluid wp-block-' . THEME_SLUG . $this->get_css_classes( $block );
+		/**
+		 * Layout class on every block root. Child themes migrated from older forks, whose blocks were not
+		 * wrapped in a fluid container, set this to '' with the `roadmap_starter_block_container_class` filter.
+		 */
+		$container = (string) apply_filters( 'roadmap_starter_block_container_class', 'container-fluid', self::get_slug() );
+		$classes  .= ( '' !== $container ? ' ' . $container : '' ) . ' wp-block-' . Identity::block_prefix() . $this->get_css_classes( $block );
 
 		$args = array();
+		// Fields never saved on a block (added after it was inserted) render their declared default, unless a
+		// child migrated from an older fork keeps the old behaviour (`roadmap_starter_block_default_values`).
+		$use_defaults = (bool) apply_filters( 'roadmap_starter_block_default_values', true, self::get_slug() );
 		/** @var \StoutLogic\AcfBuilder\FieldsBuilder $field_set */
 		$field_set = $this->field_set;
 		foreach ( $field_set->getFields() as $field ) {
 			$build                  = $field->build();
-			$args[ $build['name'] ] = get_field( $build['name'] );
+			$value                  = get_field( $build['name'] );
+			// A block saved without this attribute returns null (not the schema default) — fall back to
+			// the field's declared default so e.g. true/false toggles that default ON stay on.
+			if ( null === $value && isset( $build['default_value'] ) && '' !== $build['default_value'] && $use_defaults ) {
+				$value = $build['default_value'];
+			}
+			$args[ $build['name'] ] = $value;
 		}
 
-		$args = apply_filters( 'roadmap_starter/before_block_render', $args );
+		$args = apply_filters( 'roadmap_starter/before_block_render', $args, self::get_slug() );
 
 		extract( $args );
 

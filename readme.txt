@@ -6,7 +6,7 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 
 Requires at least: 4.5
 Tested up to: 6.6.1
-Stable tag: 1.0.1
+Stable tag: 2.0.0
 License: GNU General Public License v2 or later
 License URI: LICENSE
 
@@ -29,6 +29,17 @@ Roadmap Starter's custom base wordpress theme
 roadmap-starter includes support for Infinite Scroll in Jetpack.
 
 == Changelog ==
+
+= 2.0.0 - Oct 7 2026 =
+* Changed: Roadmap Starter is now a parent theme. Each site is a child theme holding only its own blocks, design tokens, styles, templates and post types; the block framework, base styles, templates and build are shared and update in place. New sites: `wp roadmap-starter scaffold-child <slug>`.
+* Changed: The AI glue (block schemas, the Source Content field, icon search) now comes from the ai-by-roadmap plugin. Requires ai-by-roadmap 0.4.0 or newer.
+* Changed: The parent ships no blocks. Hero, FAQs and ImageAndText moved to the child scaffold (`scaffold/child`).
+* Changed: The build is shared through `build/webpack.factory.js`; children use a 3-line `webpack.config.js`. Site variables are `!default` and the block CSS prefix is `$block-prefix` (SCSS) / `roadmap_starter_block_prefix` (PHP).
+* Added: `wp roadmap-starter child-audit` (redeclared parent functions, `get_template_directory()` in child code, prefix mismatches, files identical to the parent).
+* Added: Filters for children converted from older themes: `roadmap_starter_block_namespace`, `_block_container_class`, `_block_align_fallback`, `_block_default_values`; blocks without a field-group location default to their own block; `roadmap_starter/before_block_render` also passes the block slug.
+* Added: Updates from GitHub Releases (`roadmap-starter.zip`), off in git checkouts.
+* Fixed: Fluid heading sizes compile to a valid `clamp()`; render falls back to a field's default value; missing Font Awesome SVGs no longer log warnings; search and archive pages use a child's `home.php`.
+* Upgrade: existing forks keep working until converted. To convert one, follow "Converting an existing fork" in README.md (or the theme-upgrade plugin for older TeamGI-based themes), then run `wp option update template roadmap-starter --skip-themes` with the parent installed alongside.
 
 = 1.0.1 - Oct 7 2026 =
 * Changed: `npm run package` now names the zip `<theme>-v<version>.zip` and puts the theme in a top-level folder, so WordPress installs it to the right directory.

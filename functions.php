@@ -19,6 +19,12 @@ define( 'THEME_SLUG', Identity::slug() );
 define( 'THEME_TEXTDOMAIN', Identity::textdomain() );
 define( 'THEME_NAME', Identity::name() );
 
+/**
+ * Oldest ai-by-roadmap release this theme works with (it provides the block schemas, the Source
+ * Content field and icon search since 0.4.0).
+ */
+define( 'ROADMAP_STARTER_MIN_PLUGIN', '0.4.0' );
+
 function roadmap_starter_force_gifs_full_size( $attr, $attachment, $size ) {
 	// Check if the attachment is a GIF
 	if ( 'image/gif' === get_post_mime_type( $attachment ) ) {
@@ -201,9 +207,10 @@ function roadmap_starter_toolbars( $toolbars ) {
 
 /**
  * Google Fonts stylesheet URL shared by the front-end (header.php) and the block editor canvas.
+ * Child themes set their own with the `roadmap_starter_google_fonts_url` filter.
  */
 function roadmap_starter_google_fonts_url() : string {
-	return 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap';
+	return (string) apply_filters( 'roadmap_starter_google_fonts_url', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap' );
 }
 
 /**
@@ -213,7 +220,7 @@ function roadmap_starter_google_fonts_url() : string {
 add_action(
 	'admin_enqueue_scripts',
 	function () {
-		wp_enqueue_style( THEME_SLUG . '-wp-admin-css', roadmap_starter_public_uri( 'css/admin.min.css' ), array(), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_style( THEME_SLUG . '-wp-admin-css', roadmap_starter_public_uri( 'css/admin.min.css' ), array(), roadmap_starter_asset_version( 'css/admin.min.css' ) );
 	}
 );
 
@@ -273,7 +280,7 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 		add_theme_support( 'post-thumbnails' );
 
 		// This theme uses wp_nav_menu() in one location.
-		require_once 'inc/bootstrap-navwalker.php';
+		require_once get_template_directory() . '/inc/bootstrap-navwalker.php';
 		register_nav_menus(
 			array(
 				'top-nav'        => esc_html__( 'Top Nav', 'roadmap-starter' ),
@@ -286,7 +293,7 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 			)
 		);
 
-		require_once 'inc/bootstrap-pagination.php';
+		require_once get_template_directory() . '/inc/bootstrap-pagination.php';
 
 		/*
 		 * Switch default core markup for search form, comment form, and comments
@@ -334,6 +341,19 @@ if ( ! function_exists( 'roadmap_starter_setup' ) ) :
 		 *
 		 * @link https://codex.wordpress.org/Theme_Logo
 		 */
+		/*
+		 * Hand the AI glue (block schemas, Source Content field, icon search) to the ai-by-roadmap
+		 * plugin. A child theme re-declares this (after priority 10) to change the icon set.
+		 */
+		add_theme_support(
+			'ai-by-roadmap',
+			array(
+				'contract'   => 1,
+				'min_plugin' => ROADMAP_STARTER_MIN_PLUGIN,
+				'icons'      => array( 'provider' => 'font-awesome' ),
+			)
+		);
+
 		add_theme_support(
 			'custom-logo',
 			array(
@@ -400,13 +420,15 @@ add_action( 'widgets_init', 'roadmap_starter_widgets_init' );
  * Enqueue scripts and styles.
  */
 function roadmap_starter_scripts() {
+	// The compiled bundle belongs to the active theme: a child theme builds its own (parent SCSS + its
+	// tokens and blocks) into its public/ directory. filemtime() busts caches on every build.
 	wp_enqueue_style( THEME_SLUG . '-style', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
-	wp_enqueue_style( THEME_SLUG . '-style-bundle', get_template_directory_uri() . '/public/css/theme.min.css', null, wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( THEME_SLUG . '-style-bundle', roadmap_starter_public_uri( 'css/theme.min.css' ), null, roadmap_starter_asset_version( 'css/theme.min.css' ) );
 	wp_enqueue_script(
 		THEME_SLUG . '-js-bundle',
-		get_template_directory_uri() . '/public/theme.min.js',
+		roadmap_starter_public_uri( 'theme.min.js' ),
 		array( 'jquery' ),
-		wp_get_theme()->get( 'Version' ),
+		roadmap_starter_asset_version( 'theme.min.js' ),
 		true
 	);
 
@@ -453,12 +475,21 @@ require get_template_directory() . '/inc/plugin-dependencies.php';
 require get_template_directory() . '/inc/patterns.php';
 
 require get_template_directory() . '/acf-blocks/BlocksServiceProvider.php';
-require get_template_directory() . '/acf-blocks/AIForGutenbergProvider.php';
+
+/**
+ * Updates of this parent theme from its GitHub Releases.
+ */
+require get_template_directory() . '/inc/updater.php';
 
 /**
  * Theme-owned WP-CLI commands.
  */
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	// New sites are child themes of this one; `clone` (full copy) is kept for existing skills only.
+	require_once get_template_directory() . '/inc/cli/class-child-command.php';
+	\WP_CLI::add_command( 'roadmap-starter scaffold-child', array( \RoadmapStarter\CLI\Child_Command::class, 'scaffold_child' ) );
+	\WP_CLI::add_command( 'roadmap-starter child-audit', array( \RoadmapStarter\CLI\Child_Command::class, 'child_audit' ) );
+
 	require_once get_template_directory() . '/inc/cli/class-clone-command.php';
 	\WP_CLI::add_command(
 		'roadmap-starter clone',
@@ -569,3 +600,10 @@ add_filter(
 		return $categories;
 	}
 );
+
+/**
+ * Everything the parent provides is loaded. Child themes require their own files on this action:
+ * their functions.php runs *before* this file, so parent functions and constants (THEME_SLUG,
+ * roadmap_starter_*) are not available at that point.
+ */
+do_action( 'roadmap_starter_loaded' );

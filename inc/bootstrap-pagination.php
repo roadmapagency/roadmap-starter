@@ -1,4 +1,5 @@
 <?php
+if ( ! function_exists( 'bootstrap_pagination' ) ) :
 /**
  * @param WP_Query|null $wp_query
  * @param bool          $echo
@@ -100,3 +101,4 @@ function bootstrap_pagination( \WP_Query $wp_query = null, $echo = true, $params
  * ...
  * 'add_args'     => $args,
  */
+endif;

@@ -1,4 +1,4 @@
-.wp-block-roadmap-starter-hero {
+.wp-block-#{$block-prefix}-hero {
 	position: relative;
 	width: 100%;
 	overflow: hidden; // matches Lovable's hero (overflow-hidden); clips the decorative ::after blur so it can't cause mobile horizontal overflow
@@ -37,7 +37,7 @@
 	h5,
 	h6,
 	p,
-	.wp-block-roadmap-starter-hero__overline {
+	.wp-block-#{$block-prefix}-hero__overline {
 		color: #fbfdfb;
 	}
 
@@ -68,7 +68,7 @@
 	h5,
 	h6,
 	p,
-	.wp-block-roadmap-starter-hero__overline {
+	.wp-block-#{$block-prefix}-hero__overline {
 		color: map_get($theme-colors, primary);
 	}
 	}

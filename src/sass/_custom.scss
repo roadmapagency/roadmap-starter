@@ -1,3 +1,16 @@
+// Mobile dropdowns open inline (was in variables-site, which must only hold variables).
+@media (max-width: map-get($grid-breakpoints, md)) {
+		.dropdown-menu{
+				background-color: transparent!important;
+		}
+
+		.dropdown-menu.show{
+				margin-left: 20px!important;
+		}
+
+}
+
+
 //@font-face {
 //	font-family: "Expressway";
 //	src: url('../fonts/expressway_rg-webfont.woff2') format('woff2'),
@@ -558,12 +571,12 @@ ul.list-inline li {
 .page-template-blank .entry-content {
 }
 
-.archive .wp-block-roadmap-starter-imageandtext{
+.archive .wp-block-#{$block-prefix}-imageandtext{
 	margin-top: 0;
 	margin-bottom: 0;
 }
 
-.archive .wp-block-roadmap-starter-imageandtext:after{
+.archive .wp-block-#{$block-prefix}-imageandtext:after{
 	display: none;
 }
 
@@ -668,7 +681,7 @@ ul.list-inline li {
 	}
 }
 
-.wp-block-roadmap-starter{
+.wp-block-#{$block-prefix}{
 	display: flex;
 	position: relative;
 	@extend .justify-content-center;
@@ -676,12 +689,12 @@ ul.list-inline li {
 	@extend .my-md-7;
 }
 
-.wp-block-roadmap-starter.wp-block-roadmap-starter-my-sm{
+.wp-block-#{$block-prefix}.wp-block-#{$block-prefix}-my-sm{
 	@extend .my-4;
 	@extend .my-md-5;
 }
 
-.entry-content .wp-block-roadmap-starter:first-child{
+.entry-content .wp-block-#{$block-prefix}:first-child{
 	margin-top: 0!important;
 }
 
@@ -690,11 +703,11 @@ ul.list-inline li {
 	@extend .py-md-7;
 }
 
-.entry-content .wp-block-roadmap-starter.has-bg:last-child{
+.entry-content .wp-block-#{$block-prefix}.has-bg:last-child{
 	margin-bottom: 0!important;
 }
 
-body:not(.page-template-default) .entry-content .wp-block-roadmap-starter.has-bg:last-child{
+body:not(.page-template-default) .entry-content .wp-block-#{$block-prefix}.has-bg:last-child{
 	margin-bottom: map-get($spacers, 6) * -1!important;
 }
 
@@ -846,7 +859,7 @@ body:not(.page-template-default) .entry-content .wp-block-contact-form-7-contact
 
 .wp-block-contact-form-7-contact-form-selector{
 	position: relative;
-	@extend .wp-block-roadmap-starter;
+	@extend .wp-block-#{$block-prefix};
 	@extend .has-bg;
 	@extend .light-green;
 	@extend .container-fluid;

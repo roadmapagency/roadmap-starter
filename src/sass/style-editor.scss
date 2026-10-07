@@ -26,5 +26,5 @@ html :where(.wp-block) {
 }
 
 // Front-end `.entry-content` first/last-child rules (see _custom.scss) mirrored onto the editor root container.
-.is-root-container > .wp-block:first-child .wp-block-roadmap-starter { margin-top: 0 !important; }
-.is-root-container > .wp-block:last-child .wp-block-roadmap-starter.has-bg { margin-bottom: 0 !important; }
+.is-root-container > .wp-block:first-child .wp-block-#{$block-prefix} { margin-top: 0 !important; }
+.is-root-container > .wp-block:last-child .wp-block-#{$block-prefix}.has-bg { margin-bottom: 0 !important; }

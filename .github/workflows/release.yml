@@ -1,0 +1,47 @@
+name: Release
+
+# Builds roadmap-starter.zip and publishes it as a GitHub Release whenever a version tag
+# (X.Y.Z, no "v" prefix) is pushed; sites update from it via inc/updater.php. Run manually
+# (Actions → Release → Run workflow) to (re)publish an existing tag.
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to release (e.g. 2.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      # Theme source at the tag…
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      # …packaged with the current tooling, so tags that predate bin/build-zip.sh can be released.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: .tooling
+
+      - name: Build zip
+        id: build
+        run: THEME_DIR="$GITHUB_WORKSPACE" .tooling/bin/build-zip.sh "$TAG" | tee -a "$GITHUB_OUTPUT"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: roadmap-starter ${{ steps.build.outputs.version }}
+          body_path: .tooling/build-zip/notes.md
+          files: .tooling/${{ steps.build.outputs.zip }}
+          fail_on_unmatched_files: true
