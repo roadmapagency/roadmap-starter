@@ -30,13 +30,11 @@ abstract class AbstractBlock implements BlocksInterface {
 	public function __construct() {
 		$this->field_set = new FieldsBuilder( $this->get_slug() );
 
-		// Add AI fields but make them hidden in the UI
-		$this->field_set->addTextArea( 'ai_content' );
-
 		add_action(
 			'acf/init',
 			function () {
 				$this->register_fields();
+				$this->add_source_content_field();
 			}
 		);
 
@@ -71,7 +69,28 @@ abstract class AbstractBlock implements BlocksInterface {
 
 	public function get_field_set() {
 		$this->register_fields();
+		$this->add_source_content_field();
 		return $this->field_set;
+	}
+
+	/**
+	 * Appends the shared Source Content field after the block's own fields.
+	 *
+	 * Stored as `ai_content` (the name ai-by-roadmap and the block switcher read): the verbatim
+	 * source copy the block was filled from, kept stable so the block can be swapped for another.
+	 */
+	protected function add_source_content_field() {
+		if ( $this->field_set->fieldExists( 'ai_content' ) ) {
+			return;
+		}
+		$this->field_set->addTextArea(
+			'ai_content',
+			array(
+				'label'        => __( 'Source Content', 'roadmap-starter' ),
+				'instructions' => __( 'The original copy this block was built from. Used when switching this block to a different block type — it does not appear on the page.', 'roadmap-starter' ),
+				'rows'         => 4,
+			)
+		);
 	}
 
 	/**
