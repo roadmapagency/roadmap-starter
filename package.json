@@ -1,13 +1,13 @@
 {
   "name": "roadmap-starter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Roadmap Starter WordPress theme",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production npx webpack --config webpack.config.js",
     "production": "npm run build",
-    "package": "npm run build && zip -1Tr ../roadmap-starter.zip . -x \".*\" -x node_modules/\\* -x tmp\\/*",
+    "package": "npm run build && THEME=$(basename \"$(pwd)\") && VERSION=$(grep -m 1 'Version:' style.css | sed 's/.*Version:[[:space:]]*//' | tr -d '[:space:]') && cd .. && rm -f \"$THEME-v$VERSION.zip\" && zip -1Tr \"$THEME-v$VERSION.zip\" \"$THEME\" -x \"$THEME/.*\" -x \"$THEME/node_modules/*\" -x \"$THEME/tmp/*\"",
     "watch": "npx webpack --config webpack.config.js --watch"
   },
   "keywords": [],

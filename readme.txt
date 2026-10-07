@@ -6,7 +6,7 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 
 Requires at least: 4.5
 Tested up to: 6.6.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GNU General Public License v2 or later
 License URI: LICENSE
 
@@ -29,6 +29,10 @@ Roadmap Starter's custom base wordpress theme
 roadmap-starter includes support for Infinite Scroll in Jetpack.
 
 == Changelog ==
+
+= 1.0.1 - Oct 7 2026 =
+* Changed: `npm run package` now names the zip `<theme>-v<version>.zip` and puts the theme in a top-level folder, so WordPress installs it to the right directory.
+* Added: CLAUDE.md with the release workflow.
 
 = 1.0 - Feb 27 2026 =
 * Initial release
