@@ -185,12 +185,41 @@ final class Child_Command {
 			WP_CLI::warning( count( $identical ) . " file(s) identical to the parent's — delete them so parent updates reach this site:\n  " . implode( "\n  ", array_slice( $identical, 0, 30 ) ) );
 		}
 
+		list( $prefix, $namespace ) = self::identity( $slug, $dir );
+
 		$tokens = $dir . '/src/sass/_tokens.scss';
-		if ( is_readable( $tokens ) && preg_match( '/^\$block-prefix:\s*[\'"]([^\'"]+)[\'"]/m', (string) file_get_contents( $tokens ), $m ) && $slug === get_stylesheet() ) {
-			$php = \RoadmapStarter\Identity::block_prefix();
-			if ( $m[1] !== $php ) {
-				WP_CLI::warning( "\$block-prefix '{$m[1]}' in _tokens.scss differs from the PHP block prefix '{$php}' — blocks render unstyled." );
+		if ( is_readable( $tokens ) && preg_match( '/^\$block-prefix:\s*[\'"]([^\'"]+)[\'"]/m', (string) file_get_contents( $tokens ), $m ) ) {
+			if ( null === $prefix ) {
+				WP_CLI::warning( 'Could not read the roadmap_starter_block_prefix filter from functions.php — activate the theme to check $block-prefix.' );
+			} elseif ( $m[1] !== $prefix ) {
+				WP_CLI::warning( "\$block-prefix '{$m[1]}' in _tokens.scss differs from the PHP block prefix '{$prefix}' — blocks render unstyled." );
 				++$errors;
+			}
+		}
+
+		// Each block must be <namespace>\<Dir>\<Dir>: the registry only autoloads the child's blocks under
+		// the child's namespace, so a block declared anywhere else silently never registers.
+		if ( null === $namespace ) {
+			WP_CLI::warning( 'Could not read the roadmap_starter_block_namespace filter from functions.php — activate the theme to check block namespaces.' );
+		} else {
+			foreach ( (array) glob( $dir . '/acf-blocks/Blocks/*', GLOB_ONLYDIR ) as $block_dir ) {
+				$name = basename( $block_dir );
+				$file = $block_dir . '/' . $name . '.php';
+				if ( ! is_file( $file ) ) {
+					WP_CLI::warning( "acf-blocks/Blocks/{$name}: no {$name}.php — the block will not register." );
+					++$errors;
+					continue;
+				}
+				$code     = (string) file_get_contents( $file );
+				$declared = preg_match( '/^\s*(?:<\?php\s+)?namespace\s+([A-Za-z0-9_\\\\]+)\s*;/m', $code, $m ) ? $m[1] : '';
+				$expected = $namespace . '\\' . $name;
+				if ( $declared !== $expected ) {
+					WP_CLI::warning( "acf-blocks/Blocks/{$name}/{$name}.php: namespace '{$declared}', expected '{$expected}' — the block will not register." );
+					++$errors;
+				} elseif ( ! preg_match( '/\bclass\s+' . preg_quote( $name, '/' ) . '\b/', $code ) ) {
+					WP_CLI::warning( "acf-blocks/Blocks/{$name}/{$name}.php: no class {$name} — the block will not register." );
+					++$errors;
+				}
 			}
 		}
 
@@ -209,6 +238,33 @@ final class Child_Command {
 			WP_CLI::error( "{$errors} problem(s) in {$slug}." );
 		}
 		WP_CLI::success( "{$slug} looks like a healthy roadmap-starter child theme." );
+	}
+
+	/**
+	 * The child's block prefix and namespace. For the active theme these come from the filters; for an
+	 * inactive child they are read from the `add_filter( 'roadmap_starter_block_…', static fn() => '…' )`
+	 * lines in its functions.php (the scaffold's form). A value that can't be read is null; with no filter
+	 * at all the parent's defaults apply (the slug, and RoadmapStarter\Blocks).
+	 *
+	 * @return array{0: ?string, 1: ?string}
+	 */
+	private static function identity( string $slug, string $dir ): array {
+		if ( $slug === get_stylesheet() ) {
+			return array( \RoadmapStarter\Identity::block_prefix(), \RoadmapStarter\Identity::block_namespace() );
+		}
+		$code   = is_readable( $dir . '/functions.php' ) ? (string) file_get_contents( $dir . '/functions.php' ) : '';
+		$values = array();
+		foreach ( array( 'prefix' => $slug, 'namespace' => 'RoadmapStarter\\Blocks' ) as $key => $default ) {
+			$filter = 'roadmap_starter_block_' . $key;
+			if ( false === strpos( $code, $filter ) ) {
+				$values[] = $default;
+			} elseif ( preg_match( "/['\"]{$filter}['\"]\s*,\s*(?:static\s+)?fn\s*\(\s*\)\s*:?\s*\w*\s*=>\s*'([^']+)'/", $code, $m ) ) {
+				$values[] = trim( str_replace( '\\\\', '\\', $m[1] ), '\\' );
+			} else {
+				$values[] = null;
+			}
+		}
+		return $values;
 	}
 
 	/** @return string[] Absolute paths of PHP files outside build/dependency dirs. */

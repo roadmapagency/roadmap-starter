@@ -30,11 +30,24 @@ cd wp-content/themes/client-acme && npm install && npm run build
 wp theme activate client-acme
 ```
 
+The `wp roadmap-starter` commands are registered by the parent's `functions.php`, so they only exist while
+roadmap-starter or a child is active. On a fresh site (or to let `wp help` / `wp cli has-command` see them),
+load them directly:
+
+```bash
+wp --require=wp-content/themes/roadmap-starter/inc/cli/bootstrap.php roadmap-starter scaffold-child client-acme
+```
+
+or add `require: [wp-content/themes/roadmap-starter/inc/cli/bootstrap.php]` to the site's `wp-cli.yml`.
+
 The child gets the Hero / FAQs / ImageAndText starter blocks in its own namespace (`ClientAcme\Blocks`), a
 `_tokens.scss` to fill in, and a `functions.php` that loads its own files on `roadmap_starter_loaded` (its
 `functions.php` runs *before* the parent's). Run `wp roadmap-starter child-audit` after changes: it fails on
-redeclared parent functions, `get_template_directory()` in child code, or a `$block-prefix` that disagrees with
-PHP, and lists files identical to the parent's (delete them so parent updates apply).
+redeclared parent functions, `get_template_directory()` in child code, a `$block-prefix` that disagrees with
+PHP, or a block whose class isn't in the child's namespace (it would silently not register), and lists files
+identical to the parent's (delete them so parent updates apply). It also checks an inactive child, reading its
+prefix and namespace from the `add_filter( 'roadmap_starter_block_…', static fn() => '…' )` lines in its
+`functions.php`.
 
 **Converting an existing fork** (made with the old `clone` command): set `Template: roadmap-starter` in its
 `style.css`, delete the framework copies `child-audit` reports, re-namespace its blocks, move its variables to
