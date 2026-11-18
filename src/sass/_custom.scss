@@ -650,7 +650,8 @@ ul.list-inline li {
 }
 
 .angles.angles-top:before, .no-bg + .has-bg:before{
-	background-image: url(/wp-content/themes/valleyfiber/public/images/angles.svg);
+	// No angle artwork ships with the parent: a site that wants the motif sets background-image on
+	// these ::before/::after rules in its own _custom.scss (e.g. url(../images/angles.svg)).
 	top: -100px;
 	transform: rotate(180deg);
 }
@@ -659,16 +660,8 @@ ul.list-inline li {
 	//margin-top: map-get($spacers, 7) + 6.25rem!important;
 }
 
-.angles.angles-bottom:after{
-	background-image: url(/wp-content/themes/valleyfiber/public/images/angles.svg);
-}
-
 .angles.angles-bottom:not(:last-child):after, .has-bg:not(:last-child):after{
 	bottom: -100px;
-}
-
-.angles-dark:after{
-	background-image: url(/wp-content/themes/valleyfiber/public/images/angles-dark.svg);
 }
 
 .has-bg + .has-bg{
