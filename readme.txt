@@ -6,7 +6,7 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 
 Requires at least: 4.5
 Tested up to: 6.6.1
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GNU General Public License v2 or later
 License URI: LICENSE
 
@@ -29,6 +29,14 @@ Roadmap Starter's custom base wordpress theme
 roadmap-starter includes support for Infinite Scroll in Jetpack.
 
 == Changelog ==
+
+= 2.1.1 - Nov 18 2026 =
+* Fixed: `wp roadmap-starter child-audit` now fails on a child block whose class isn't in the child's namespace (it silently never registered), and checks the block prefix and namespace of an inactive child too.
+* Fixed: The `wp roadmap-starter` commands can be loaded before any roadmap-starter theme is active, e.g. to create a fresh site's first child: `wp --require=wp-content/themes/roadmap-starter/inc/cli/bootstrap.php roadmap-starter scaffold-child <slug>` (or add it to the site's wp-cli.yml). `wp help` and `wp cli has-command` then see them too.
+* Fixed: The blog index's featured post only passes fields the child's ImageAndText block has, and falls back to a plain card otherwise. New filter: `roadmap_starter_featured_post_block_data`.
+* Fixed: Removed angle background images pointing at another site's theme (`/wp-content/themes/valleyfiber/…`), which 404'd on every page. Sites that want the motif set the image in their own styles.
+* Removed: An unused client photo (`src/images/client-supplied/pic3.jpg`) that was copied into every child's `public/`.
+* Upgrade: rebuild each child theme (`npm run build`) so it picks up the parent's styles.
 
 = 2.1.0 - Oct 7 2026 =
 * Added: Minor and patch releases of Roadmap Starter (2.x) now install automatically through WordPress's background updater. A new major version still waits for someone to click Update. Change it with the `roadmap_starter_auto_update` filter.

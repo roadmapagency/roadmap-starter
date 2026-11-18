@@ -181,7 +181,7 @@ final class Clone_Command {
 
 		$current = wp_get_theme();
 		if ( $current && $current->get_stylesheet() === $slug ) {
-			WP_CLI::error( sprintf( 'Theme "%s" is currently active. Switch away first: `wp theme activate %s`.', $slug, $source_slug ) );
+			WP_CLI::error( sprintf( 'Theme "%s" is currently active. Activate another theme first (`wp theme list` shows them, e.g. `wp theme activate <slug>`).', $slug ) );
 		}
 
 		WP_CLI::confirm( sprintf( 'Delete theme directory %s?', $target_dir ), $assoc_args );

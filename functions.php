@@ -482,30 +482,10 @@ require get_template_directory() . '/acf-blocks/BlocksServiceProvider.php';
 require get_template_directory() . '/inc/updater.php';
 
 /**
- * Theme-owned WP-CLI commands.
+ * Theme-owned WP-CLI commands (also loadable with `wp --require=…/inc/cli/bootstrap.php` before this theme
+ * or a child is active — see that file).
  */
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	// New sites are child themes of this one; `clone` (full copy) is kept for existing skills only.
-	require_once get_template_directory() . '/inc/cli/class-child-command.php';
-	\WP_CLI::add_command( 'roadmap-starter scaffold-child', array( \RoadmapStarter\CLI\Child_Command::class, 'scaffold_child' ) );
-	\WP_CLI::add_command( 'roadmap-starter child-audit', array( \RoadmapStarter\CLI\Child_Command::class, 'child_audit' ) );
-
-	require_once get_template_directory() . '/inc/cli/class-clone-command.php';
-	\WP_CLI::add_command(
-		'roadmap-starter clone',
-		array( \RoadmapStarter\CLI\Clone_Command::class, 'clone_' )
-	);
-	\WP_CLI::add_command(
-		'roadmap-starter remove',
-		array( \RoadmapStarter\CLI\Clone_Command::class, 'remove' )
-	);
-
-	require_once get_template_directory() . '/inc/cli/class-fields-command.php';
-	\WP_CLI::add_command( 'roadmap-starter fields', \RoadmapStarter\CLI\Fields_Command::class );
-
-	require_once get_template_directory() . '/inc/cli/class-patterns-command.php';
-	\WP_CLI::add_command( 'roadmap-starter patterns', \RoadmapStarter\CLI\Patterns_Command::class );
-}
+require_once get_template_directory() . '/inc/cli/bootstrap.php';
 
 /**
  * Load Jetpack compatibility file.
